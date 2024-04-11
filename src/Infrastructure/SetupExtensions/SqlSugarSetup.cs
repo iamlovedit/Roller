@@ -22,15 +22,24 @@ public static class SqlSugarSetup
 
         var sqlSugarOptions = configuration.GetSection(SqlSugarOptions.Name).Get<SqlSugarOptions>();
 
+        if (!(sqlSugarOptions?.Enable ?? false))
+        {
+            return;
+        }
 
-        SnowFlakeSingle.WorkId = configuration["SNOWFLAKES_WORKERID"]?.ObjToInt() ??
-                                 throw new ArgumentNullException("Snowflakes workerid is null");
+        if (sqlSugarOptions.SnowFlake?.Enable ?? false)
+        {
+            SnowFlakeSingle.WorkId =
+                configuration["SNOWFLAKES_WORKERID"]?.ObjToInt() ?? sqlSugarOptions.SnowFlake?.WorkerId ??
+                throw new ArgumentNullException("Snowflakes workerid is null");
+        }
+
         var connectionString =
-            $"server={configuration["POSTGRESQL_HOST"]};" +
-            $"port={configuration["POSTGRESQL_PORT"]};" +
-            $"database={configuration["POSTGRESQL_DATABASE"]};" +
-            $"userid={configuration["POSTGRESQL_USER"]};" +
-            $"password={configuration["POSTGRESQL_PASSWORD"]};";
+            $"server={configuration["DB_HOST"] ?? sqlSugarOptions.Server};" +
+            $"port={configuration["DB_PORT"] ?? sqlSugarOptions.Port.ToString()};" +
+            $"database={configuration["DB_DATABASE"] ?? sqlSugarOptions.Database};" +
+            $"userid={configuration["DB_USER"]};" +
+            $"password={configuration["DB_PASSWORD"]};";
 
         var connectionConfig = new ConnectionConfig()
         {
@@ -53,7 +62,6 @@ public static class SqlSugarSetup
                 config.Aop.OnLogExecuting = (sql, parameters) => { Log.Logger.Information(sql); };
             }
         });
-
         services.AddSingleton<ISqlSugarClient>(sugarScope);
     }
 }

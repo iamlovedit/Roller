@@ -28,10 +28,7 @@ public static class InfrastructureSetup
             options.LowercaseQueryStrings = true;
         });
 
-        services.AddCors(options =>
-        {
-            options.AddPolicy("cors", policy => { policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin(); });
-        });
+        services.AddCorsSetup(configuration);
 
         services.AddControllers(options => { options.Filters.Add(typeof(GlobalExceptionsFilter)); }).AddNewtonsoftJson(
             options =>
