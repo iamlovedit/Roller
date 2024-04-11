@@ -4,6 +4,7 @@ using Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Infrastructure.SetupExtensions;
@@ -40,11 +41,15 @@ public static class InfrastructureSetup
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                 options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-        
+
+        services.AddApiVersionSetup(configuration);
+
         services.AddSqlSugarSetup(configuration, builder.Environment);
-        
+
         services.AddRedisCacheSetup(configuration);
-        
+
+        builder.AddSerilogSetup();
     }
 }

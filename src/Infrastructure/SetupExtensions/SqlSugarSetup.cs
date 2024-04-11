@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Infrastructure.Options;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,7 +11,8 @@ namespace Infrastructure.SetupExtensions;
 
 public static class SqlSugarSetup
 {
-    public static void AddSqlSugarSetup(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public static void AddSqlSugarSetup(this IServiceCollection services, IConfiguration configuration,
+        IWebHostEnvironment hostEnvironment)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -18,7 +20,11 @@ public static class SqlSugarSetup
 
         ArgumentNullException.ThrowIfNull(hostEnvironment);
 
-        SnowFlakeSingle.WorkId = configuration["SNOWFLAKES_WORKID"]?.ObjToInt() ?? throw new ArgumentNullException("Snowflakes workid is null");
+        var sqlSugarOptions = configuration.GetSection(SqlSugarOptions.Name).Get<SqlSugarOptions>();
+
+
+        SnowFlakeSingle.WorkId = configuration["SNOWFLAKES_WORKERID"]?.ObjToInt() ??
+                                 throw new ArgumentNullException("Snowflakes workerid is null");
         var connectionString =
             $"server={configuration["POSTGRESQL_HOST"]};" +
             $"port={configuration["POSTGRESQL_PORT"]};" +
@@ -44,10 +50,7 @@ public static class SqlSugarSetup
             config.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
             if (hostEnvironment.IsDevelopment() || hostEnvironment.IsStaging())
             {
-                config.Aop.OnLogExecuting = (sql, parameters) =>
-                {
-                    Log.Logger.Information(sql);
-                };
+                config.Aop.OnLogExecuting = (sql, parameters) => { Log.Logger.Information(sql); };
             }
         });
 
