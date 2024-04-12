@@ -1,1 +1,35 @@
 # Roller
+
+## 环境变量
+
+### SqlSugar
+
+- DB_HOST
+- DB_PORT
+- DB_DATABASE
+- DB_USER
+- DB_PASSWORD
+- SNOWFLAKES_WORKERID
+
+### Redis
+
+- REDIS_HOST
+- REDIS_PASSWORD
+
+### Seq
+
+- SEQ_URL
+- SEQ_APIKEY
+- SEQ_ADMINPASSWORD
+
+### Timezone
+
+- TZ
+
+### Aes
+
+- AES_KEY
+
+### JWT
+
+- AUDIENCE_KEY
