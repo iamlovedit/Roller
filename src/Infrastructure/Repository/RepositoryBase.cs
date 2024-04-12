@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using SqlSugar;
 using SqlSugar.Extensions;
 
-namespace Infrastructure.Repository;
+namespace Roller.Infrastructure.Repository;
 
 public class RepositoryBase<T>(ISqlSugarClient context) : IRepositoryBase<T> where T : class, new()
 {

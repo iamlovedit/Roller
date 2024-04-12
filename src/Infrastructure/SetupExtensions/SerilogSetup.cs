@@ -1,13 +1,13 @@
-﻿using Infrastructure.Options;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Roller.Infrastructure.Options;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Infrastructure.SetupExtensions;
+namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SerilogSetup
 {
@@ -35,6 +35,10 @@ public static class SerilogSetup
 
         if (serilogOptions.SeqOptions?.Enable ?? false)
         {
+            var serverUrl = configuration["SEQ_URL"] ?? serilogOptions.SeqOptions.Address;
+            ArgumentException.ThrowIfNullOrEmpty(serverUrl);
+            var apiKey = configuration["SEQ_APIKEY"] ?? serilogOptions.SeqOptions.Secret;
+            ArgumentException.ThrowIfNullOrEmpty(apiKey);
             loggerConfiguration = loggerConfiguration.WriteTo.Seq(
                 configuration["SEQ_URL"] ?? serilogOptions.SeqOptions.Address,
                 apiKey: configuration["SEQ_APIKEY"] ?? serilogOptions.SeqOptions.Secret);

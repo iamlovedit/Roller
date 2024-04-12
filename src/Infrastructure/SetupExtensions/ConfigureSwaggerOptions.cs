@@ -1,12 +1,12 @@
 ﻿using Asp.Versioning.ApiExplorer;
-using Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Roller.Infrastructure.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Infrastructure.SetupExtensions;
+namespace Roller.Infrastructure.SetupExtensions;
 
 public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
 {

@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Options;
+﻿namespace Roller.Infrastructure.Options;
 
 public class SqlSugarOptions : OptionsBase
 {
@@ -8,7 +8,7 @@ public class SqlSugarOptions : OptionsBase
 
     public string Server { get; set; }
 
-    public int Port { get; set; }
+    public int? Port { get; set; }
 
     public string Database { get; set; }
 

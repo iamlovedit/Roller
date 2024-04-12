@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace Infrastructure.Cache;
+namespace Roller.Infrastructure.Cache;
 
 public class RedisBasketRepository : IRedisBasketRepository
 {

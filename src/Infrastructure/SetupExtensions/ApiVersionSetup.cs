@@ -1,9 +1,9 @@
 ﻿using Asp.Versioning;
-using Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Roller.Infrastructure.Options;
 
-namespace Infrastructure.SetupExtensions;
+namespace Roller.Infrastructure.SetupExtensions;
 
 public static class ApiVersionSetup
 {

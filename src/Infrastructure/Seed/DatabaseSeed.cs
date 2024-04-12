@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SqlSugar;
 
-namespace Infrastructure.Seed;
+namespace Roller.Infrastructure.Seed;
 
 public class DatabaseSeed
 {

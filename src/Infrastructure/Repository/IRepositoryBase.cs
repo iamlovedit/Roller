@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using SqlSugar;
 
-namespace Infrastructure.Repository;
+namespace Roller.Infrastructure.Repository;
 
 public interface IRepositoryBase<T> where T : class, new()
 {

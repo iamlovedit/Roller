@@ -1,4 +1,4 @@
-﻿namespace Infrastructure;
+﻿namespace Roller.Infrastructure;
 
 public class MessageData<T>
 {

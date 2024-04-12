@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Infrastructure;
+namespace Roller.Infrastructure;
 
 public class MappingProfile : Profile
 {

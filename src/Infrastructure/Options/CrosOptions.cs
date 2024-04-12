@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Options;
+﻿namespace Roller.Infrastructure.Options;
 
 public class CrossOptions : OptionsBase
 {

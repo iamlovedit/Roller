@@ -1,13 +1,17 @@
-﻿using AutoMapper;
-using Infrastructure.Filters;
-using Infrastructure.Repository;
+﻿using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Roller.Infrastructure.Filters;
+using Roller.Infrastructure.Repository;
+using Roller.Infrastructure.Security;
 
-namespace Infrastructure.SetupExtensions;
+namespace Roller.Infrastructure.SetupExtensions;
 
 public static class InfrastructureSetup
 {
@@ -16,6 +20,11 @@ public static class InfrastructureSetup
         ArgumentNullException.ThrowIfNull(builder);
         var services = builder.Services;
         var configuration = builder.Configuration;
+        services.AddSingleton<JwtSecurityTokenHandler>();
+        services.AddSingleton<RollerTokenHandler>();
+        services.AddSingleton<IAesEncryptionService, AesEncryptionService>();
+        services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerOptionsPostConfigureOptions>();
+        services.AddSingleton<ITokenBuilder, TokenBuilder>();
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

@@ -1,14 +1,14 @@
 ﻿using System.Net;
-using Infrastructure.Seed;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Roller.Infrastructure.Seed;
 using Serilog;
 
-namespace Infrastructure.Middlewares;
+namespace Roller.Infrastructure.Middlewares;
 
 public static class InfrastructureMiddleware
 {

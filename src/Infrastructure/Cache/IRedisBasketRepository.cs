@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace Infrastructure.Cache;
+namespace Roller.Infrastructure.Cache;
 
 public interface IRedisBasketRepository
 {
