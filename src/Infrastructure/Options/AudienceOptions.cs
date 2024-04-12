@@ -9,4 +9,7 @@ public class AudienceOptions : OptionsBase
     public string Audience { get; set; }
 
     public string Secret { get; set; }
+
+
+    public int Expiration { get; set; }
 }

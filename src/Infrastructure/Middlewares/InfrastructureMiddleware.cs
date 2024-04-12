@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Seed;
 using Serilog;
 
@@ -37,7 +38,7 @@ public static class InfrastructureMiddleware
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(message));
             });
         });
-        app.UseCors("cors");
+        app.UseCors(CrossOptions.Name);
 
         app.UseAuthentication();
 

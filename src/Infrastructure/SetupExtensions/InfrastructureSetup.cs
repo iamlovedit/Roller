@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -28,6 +29,7 @@ public static class InfrastructureSetup
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        services.AddDatabaseSeedSetup();
         services.AddSingleton(provider =>
             new MapperConfiguration(config => { config.AddProfile(new MappingProfile()); }).CreateMapper());
 
@@ -57,5 +59,22 @@ public static class InfrastructureSetup
         services.AddRedisCacheSetup(configuration);
 
         builder.AddSerilogSetup();
+
+        services.AddJwtAuthenticationSetup(configuration);
+
+        services.AddAuthorizationSetup(configuration);
+        
+        services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter a valid token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = JwtBearerDefaults.AuthenticationScheme
+            });
+        });
     }
 }
