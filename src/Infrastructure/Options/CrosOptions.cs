@@ -4,7 +4,7 @@ public class CrossOptions : OptionsBase
 {
     public const string Name = "Cros";
 
-    public string PoliyName { get; set; }
+    public string PolicyName { get; set; }
 
     public bool AllowAnyMethod { get; set; }
 
