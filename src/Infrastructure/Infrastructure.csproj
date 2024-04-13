@@ -6,6 +6,13 @@
         <Nullable>enable</Nullable>
         <AssemblyName>Roller.Infrastructure</AssemblyName>
         <RootNamespace>Roller.Infrastructure</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Roller</PackageId>
+        <Authors>Young</Authors>
+        <PackageProjectUrl>https://github.com/iamlovedit/Roller</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/iamlovedit/Roller/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageIcon>Roller.png</PackageIcon>
+        <RepositoryUrl>https://github.com/iamlovedit/Roller</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +29,13 @@
       <PackageReference Include="SqlSugarCore" Version="5.1.4.152-preview02" />
       <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Roller.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
