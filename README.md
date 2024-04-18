@@ -22,7 +22,6 @@
 
 ```
 "Cros": {
-
     "Enable": true,
     "PolicyName": "cros",
     "AllowAnyMethod": true,
@@ -90,6 +89,7 @@
     "Enable": true,
     "WriteFile": true,
     "SeqOptions": {
+      "Enable": true,
       "Address": "localhost",
       "Secret": "test_secret"
     }
