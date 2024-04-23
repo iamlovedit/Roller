@@ -26,8 +26,11 @@ public static class ApiVersionSetup
             options.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(),
                 new HeaderApiVersionReader(versionOptions!.HeaderName),
                 new MediaTypeApiVersionReader(versionOptions!.ParameterName));
+        }).AddApiExplorer(builder =>
+        {
+            builder.GroupNameFormat = "'v'VVV";
+            builder.SubstituteApiVersionInUrl = true;
         });
-
         services.ConfigureOptions<ConfigureSwaggerOptions>();
     }
 }
