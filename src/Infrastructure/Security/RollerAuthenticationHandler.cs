@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Roller.Infrastructure.Utils;
 
 namespace Roller.Infrastructure.Security
 {
@@ -22,16 +23,14 @@ namespace Roller.Infrastructure.Security
         {
             Response.ContentType = "application/json";
             Response.StatusCode = StatusCodes.Status401Unauthorized;
-            var message = JsonConvert.SerializeObject(new RollerApiResponse(StatusCode.Code401).Message);
-            await Response.WriteAsync(message);
+            await Response.WriteAsync(new RollerApiResponse(StatusCode.Code401).Message.Serialize());
         }
 
         protected override async Task HandleForbiddenAsync(AuthenticationProperties properties)
         {
             Response.ContentType = "application/json";
             Response.StatusCode = StatusCodes.Status403Forbidden;
-            var message = JsonConvert.SerializeObject(new RollerApiResponse(StatusCode.Code403).Message);
-            await Response.WriteAsync(message);
+            await Response.WriteAsync(new RollerApiResponse(StatusCode.Code403).Message.Serialize());
         }
     }
 }
