@@ -19,7 +19,7 @@ public static class RedisCacheSetup
         }
 
         services.AddScoped<IRedisBasketRepository, RedisBasketRepository>();
-        services.AddSingleton<IConnectionMultiplexer>(provider =>
+        services.AddSingleton<ConnectionMultiplexer>(provider =>
         {
             var host = configuration["REDIS_HOST"] ?? redisOptions.Host;
             ArgumentException.ThrowIfNullOrEmpty(host);
