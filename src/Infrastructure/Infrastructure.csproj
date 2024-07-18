@@ -13,7 +13,7 @@
         <PackageLicenseUrl>https://github.com/iamlovedit/Roller/blob/master/LICENSE</PackageLicenseUrl>
         <PackageIcon>Roller.png</PackageIcon>
         <RepositoryUrl>https://github.com/iamlovedit/Roller</RepositoryUrl>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,6 +24,8 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Mapster" Version="7.4.0" />
+      <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />

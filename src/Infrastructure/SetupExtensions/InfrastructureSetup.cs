@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +29,7 @@ public static class InfrastructureSetup
         services.AddSingleton<ITokenBuilder, TokenBuilder>();
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+        services.AddMapster();
         services.AddDatabaseSeedSetup();
         services.AddSingleton(provider =>
             new MapperConfiguration(config => { config.AddProfile(new MappingProfile()); }).CreateMapper());

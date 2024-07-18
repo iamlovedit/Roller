@@ -66,7 +66,7 @@ public class DatabaseSeed
             throw new ArgumentException("Value cannot be null or empty.", nameof(seedFile));
         }
 
-        if (File.Exists(seedFile))
+        if (!File.Exists(seedFile))
         {
             throw new ArgumentException("seed file not exist", nameof(seedFile));
         }
