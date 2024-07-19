@@ -61,4 +61,11 @@ public class RollerControllerBase : ControllerBase
         };
         return new MessageData<PageData<T>>(true, message, pageData);
     }
+    
+    [NonAction]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public long GetUserIdFromClaims()
+    {
+        return long.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Jti) ?? "0");
+    }
 }
