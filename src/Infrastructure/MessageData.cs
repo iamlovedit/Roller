@@ -1,23 +1,20 @@
 ﻿namespace Roller.Infrastructure;
 
-public class MessageData<T>
+public class MessageData(bool succeed, string message, int statusCode = 200)
 {
-    public int StatusCode { get; set; }
+    public int StatusCode { get; set; } = statusCode;
 
-    public bool Succeed { get; set; }
+    public bool Succeed { get; set; } = succeed;
 
-    public string? Message { get; set; }
+    public string? Message { get; set; } = message;
+}
 
+public class MessageData<T> : MessageData
+{
     public T? Response { get; set; }
 
-    public MessageData(bool succeed, string message, int statusCode = 200)
-    {
-        Succeed = succeed;
-        Message = message;
-        StatusCode = statusCode;
-    }
-
-    public MessageData(bool succeed, string message, T response, int statusCode = 200) : this(succeed, message, statusCode)
+    public MessageData(bool succeed, string message, T response, int statusCode = 200) : base(succeed, message,
+        statusCode)
     {
         Response = response;
     }

@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using AutoMapper;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +18,16 @@ public static class InfrastructureSetup
 {
     public static void AddInfrastructureSetup(this WebApplicationBuilder builder)
     {
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            DateFormatString = "yyyy-MM-dd HH:mm:ss",
+            DateTimeZoneHandling = DateTimeZoneHandling.Local,
+        };
+
         ArgumentNullException.ThrowIfNull(builder);
         var services = builder.Services;
         var configuration = builder.Configuration;
@@ -31,8 +40,6 @@ public static class InfrastructureSetup
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMapster();
         services.AddDatabaseSeedSetup();
-        services.AddSingleton(provider =>
-            new MapperConfiguration(config => { config.AddProfile(new MappingProfile()); }).CreateMapper());
 
         services.AddRouting(options =>
         {
@@ -42,16 +49,18 @@ public static class InfrastructureSetup
 
         services.AddCorsSetup(configuration);
 
-        services.AddControllers(options => { options.Filters.Add(typeof(GlobalExceptionsFilter)); }).AddNewtonsoftJson(
-            options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            });
+        services.AddControllers(options => { options.Filters.Add(typeof(GlobalExceptionsFilter)); })
+            .AddNewtonsoftJson(
+                options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
         services.AddApiVersionSetup(configuration);
 
@@ -64,7 +73,7 @@ public static class InfrastructureSetup
         services.AddJwtAuthenticationSetup(configuration);
 
         services.AddAuthorizationSetup(configuration);
-        
+
         services.AddSwaggerGen(options =>
         {
             options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()

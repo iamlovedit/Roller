@@ -13,7 +13,7 @@ public class GlobalExceptionsFilter : IAsyncExceptionFilter
         {
             if (!context.ExceptionHandled)
             {
-                var message = new MessageData<Exception>(false, context.Exception.Message, 500);
+                var message = new MessageData(false, context.Exception.Message, 500);
                 context.Result = new ContentResult
                 {
                     StatusCode = StatusCodes.Status200OK,

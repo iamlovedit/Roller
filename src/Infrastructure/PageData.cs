@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using Mapster;
 
 namespace Roller.Infrastructure;
 
@@ -27,16 +27,9 @@ public class PageData<T>
 
     public List<T> Data { get; set; }
 
-
-    private PageData<TResult> ConvertTo<TResult>()
+    public PageData<TResult> ConvertTo<TResult>()
     {
-        return new PageData<TResult>(Page, PageCount, DataCount, PageSize, default);
-    }
-
-    public PageData<TResult> ConvertTo<TResult>(IMapper mapper)
-    {
-        var result = ConvertTo<TResult>();
-        result.Data = mapper.Map<List<TResult>>(Data);
+        var result = new PageData<TResult>(Page, PageCount, DataCount, PageSize, Data?.Adapt<List<TResult>>());
         return result;
     }
 }

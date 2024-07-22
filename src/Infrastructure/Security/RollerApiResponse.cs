@@ -6,7 +6,7 @@ internal class RollerApiResponse
 
     public string Value { get; }
 
-    public MessageData<string> Message { get; }
+    public MessageData Message { get; }
 
     public RollerApiResponse(StatusCode code, string message = null)
     {
@@ -30,7 +30,7 @@ internal class RollerApiResponse
                 break;
         }
 
-        Message = new MessageData<string>(code == StatusCode.Code200, Value) { StatusCode = Code };
+        Message = new MessageData(code == StatusCode.Code200, Value);
     }
 }
 

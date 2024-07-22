@@ -12,6 +12,6 @@ public class TutorialController(ILogger<TutorialController> logger) : RollerCont
     public async Task<MessageData<string>> HelloAsync()
     {
         logger.LogInformation("hello world");
-        return await Task.Run(() => Success("hello world"));
+        return await Task.Run(() => Success<string>("hello world"));
     }
 }

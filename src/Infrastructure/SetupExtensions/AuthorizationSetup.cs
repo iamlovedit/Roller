@@ -25,16 +25,14 @@ namespace Roller.Infrastructure.SetupExtensions
                 var buffer = Encoding.UTF8.GetBytes(key);
                 var securityKey = new SymmetricSecurityKey(buffer);
                 var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-                
+
                 services.AddSingleton(new PermissionRequirement(ClaimTypes.Role, audienceOptions.Issuer,
                     audienceOptions.Audience,
                     TimeSpan.FromSeconds(audienceOptions.Expiration), signingCredentials));
-                services.AddAuthorization(options =>
-                {
-                    options.AddPolicy(PermissionConstants.PolicyName,
-                        policy => policy.RequireRole(PermissionConstants.Consumer, PermissionConstants.Administrator,
-                            PermissionConstants.SuperAdministrator).Build());
-                });
+                services.AddAuthorizationBuilder()
+                    .AddPolicy(PermissionConstants.PolicyName, policy => policy.RequireRole(
+                        PermissionConstants.Consumer, PermissionConstants.Administrator,
+                        PermissionConstants.SuperAdministrator).Build());
             }
         }
     }
