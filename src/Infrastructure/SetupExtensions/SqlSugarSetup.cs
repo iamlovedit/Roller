@@ -66,7 +66,7 @@ public static class SqlSugarSetup
 
         var sugarScope = new SqlSugarScope(connectionConfig, config =>
         {
-            config.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
+            config.QueryFilter.AddTableFilter<IDeleteable>(d => !d.IsDeleted);
             if (hostEnvironment.IsDevelopment() || hostEnvironment.IsStaging())
             {
                 config.Aop.OnLogExecuting = (sql, parameters) => { Log.Logger.Information(sql); };
