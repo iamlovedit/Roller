@@ -21,4 +21,10 @@ public interface IServiceBase<T> where T : class, new()
         Expression<Func<T, object>>? orderExpression = null, OrderByType orderByType = OrderByType.Asc);
 
     Task<bool> UpdateColumnsAsync(T entity, Expression<Func<T, object>> expression);
+    
+    Task<bool> DeleteByIdAsync(long id);
+
+    Task<bool> DeleteAsync(T entity);
+
+    Task<bool> DeletedByExpressionAsync(Expression<Func<T, bool>> expression);
 }

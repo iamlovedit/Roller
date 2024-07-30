@@ -48,6 +48,21 @@ public class RepositoryBase<T>(ISqlSugarClient context) : IRepositoryBase<T> whe
 
     public async Task<bool> UpdateColumnsAsync(T entity, Expression<Func<T, object>> expression)
     {
-        return await context.Updateable<T>(entity).UpdateColumns(expression).ExecuteCommandHasChangeAsync();
+        return await context.Updateable(entity).UpdateColumns(expression).ExecuteCommandHasChangeAsync();
+    }
+
+    public async Task<bool> DeleteByIdAsync(long id)
+    {
+        return await context.Deleteable<T>().In(id).ExecuteCommandHasChangeAsync();
+    }
+
+    public async Task<bool> DeleteAsync(T entity)
+    {
+        return await context.Deleteable(entity).ExecuteCommandHasChangeAsync();
+    }
+
+    public async Task<bool> DeletedByExpressionAsync(Expression<Func<T, bool>> expression)
+    {
+        return await context.Deleteable<T>().Where(expression).ExecuteCommandHasChangeAsync();
     }
 }
