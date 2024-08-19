@@ -22,7 +22,7 @@ public static class JsonExtensions
         return JsonConvert.SerializeObject(obj);
     }
 
-    public static T Deserialize<T>(this string json)
+    public static T? Deserialize<T>(this string json)
     {
         return JsonConvert.DeserializeObject<T>(json);
     }
