@@ -9,6 +9,7 @@ using Roller.Infrastructure.Cache;
 
 namespace Roller.Infrastructure.Filters;
 
+[AttributeUsage(AttributeTargets.Method)]
 public class IdempotencyAttribute(int seconds = 5) : Attribute
 {
     public int Seconds { get; set; } = seconds;
