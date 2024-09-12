@@ -1,12 +1,14 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+using Roller.Infrastructure.Exceptions;
 using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Seed;
+using Roller.Infrastructure.Utils;
 using Serilog;
 
 namespace Roller.Infrastructure.Middlewares;
@@ -34,8 +36,20 @@ public static class InfrastructureMiddleware
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
-                var message = new MessageData(false, "An exception was thrown", 500);
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(message));
+                var logger = context.RequestServices.GetService<ILogger>();
+                var exceptionHandlerPathFeature =
+                    context.Features.Get<IExceptionHandlerPathFeature>();
+                if (exceptionHandlerPathFeature?.Error is FriendlyException friendlyException)
+                {
+                    var message = friendlyException.ConvertToMessage();
+                    await context.Response.WriteAsync(message.Serialize());
+                }
+                else
+                {
+                    var message = new MessageData(false, "An exception was thrown", 500);
+                    logger?.Error(exceptionHandlerPathFeature?.Error.Message);
+                    await context.Response.WriteAsync(message.Serialize());
+                }
             });
         });
         app.UseCors(CrossOptions.Name);
