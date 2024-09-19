@@ -13,7 +13,7 @@
         <PackageLicenseUrl>https://github.com/iamlovedit/Roller/blob/master/LICENSE</PackageLicenseUrl>
         <PackageIcon>Roller.png</PackageIcon>
         <RepositoryUrl>https://github.com/iamlovedit/Roller</RepositoryUrl>
-        <Version>1.1.2</Version>
+        <Version>1.1.3</Version>
     </PropertyGroup>
 
     <ItemGroup>
