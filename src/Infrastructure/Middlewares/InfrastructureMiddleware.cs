@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Roller.Infrastructure.Exceptions;
+using Roller.Infrastructure.Filters;
 using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Seed;
 using Roller.Infrastructure.Utils;
@@ -18,6 +19,8 @@ public static class InfrastructureMiddleware
     public static void UseInfrastructure(this WebApplication app)
     {
         ArgumentNullException.ThrowIfNull(app);
+
+        app.UseMiddleware<NotFoundMiddleware>();
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
@@ -35,7 +38,7 @@ public static class InfrastructureMiddleware
             builder.Run(async context =>
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.StatusCode = StatusCodes.Status200OK;
                 var logger = context.RequestServices.GetService<ILogger>();
                 var exceptionHandlerPathFeature =
                     context.Features.Get<IExceptionHandlerPathFeature>();
