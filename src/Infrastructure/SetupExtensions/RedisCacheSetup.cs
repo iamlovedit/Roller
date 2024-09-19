@@ -13,7 +13,7 @@ public static class RedisCacheSetup
         ArgumentNullException.ThrowIfNull(services);
 
         var redisOptions = configuration.GetSection(RedisOptions.Name).Get<RedisOptions>();
-        if (!(redisOptions?.Enable ?? false))
+        if (redisOptions is null || !redisOptions.Enable)
         {
             return;
         }

@@ -9,13 +9,9 @@ public class MessageData(bool succeed, string message, int statusCode = 200)
     public string? Message { get; set; } = message;
 }
 
-public class MessageData<T> : MessageData
-{
-    public T? Response { get; set; }
-
-    public MessageData(bool succeed, string message, T response, int statusCode = 200) : base(succeed, message,
+public class MessageData<T>(bool succeed, string message, T response, int statusCode = 200)
+    : MessageData(succeed, message,
         statusCode)
-    {
-        Response = response;
-    }
+{
+    public T? Response { get; set; } = response;
 }

@@ -16,7 +16,7 @@ public static class SerilogSetup
         ArgumentNullException.ThrowIfNull(builder);
         var configuration = builder.Configuration;
         var serilogOptions = configuration.GetSection(SerilogOptions.Name).Get<SerilogOptions>();
-        if (!(serilogOptions?.Enable ?? false))
+        if (serilogOptions is null || !serilogOptions.Enable)
         {
             return;
         }

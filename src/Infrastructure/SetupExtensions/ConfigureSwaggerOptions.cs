@@ -8,21 +8,15 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Roller.Infrastructure.SetupExtensions;
 
-public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
+public class ConfigureSwaggerOptions(
+    IApiVersionDescriptionProvider provider,
+    IConfiguration configuration)
+    : IConfigureNamedOptions<SwaggerGenOptions>
 {
-    private readonly IApiVersionDescriptionProvider _provider;
-    private readonly IConfiguration _configuration;
-
-    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration)
-    {
-        _provider = provider;
-        _configuration = configuration;
-    }
-
     public void Configure(SwaggerGenOptions options)
     {
-        var versionOptions = _configuration.GetSection(VersionOptions.Name).Get<VersionOptions>();
-        foreach (var description in _provider.ApiVersionDescriptions)
+        var versionOptions = configuration.GetSection(VersionOptions.Name).Get<VersionOptions>();
+        foreach (var description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(description.GroupName, CreateVersionInfo(description, versionOptions!.SwaggerTitle));
         }

@@ -13,7 +13,7 @@ public static class ApiVersionSetup
         ArgumentNullException.ThrowIfNull(configuration);
 
         var versionOptions = configuration.GetSection(VersionOptions.Name).Get<VersionOptions>();
-        if (!(versionOptions?.Enable ?? false))
+        if (versionOptions is null || !versionOptions.Enable)
         {
             return;
         }

@@ -21,8 +21,7 @@ public static class SqlSugarSetup
         ArgumentNullException.ThrowIfNull(hostEnvironment);
 
         var sqlSugarOptions = configuration.GetSection(SqlSugarOptions.Name).Get<SqlSugarOptions>();
-
-        if (!(sqlSugarOptions?.Enable ?? false))
+        if (sqlSugarOptions is null || !sqlSugarOptions.Enable)
         {
             return;
         }
@@ -66,7 +65,7 @@ public static class SqlSugarSetup
 
         var sugarScope = new SqlSugarScope(connectionConfig, config =>
         {
-            config.QueryFilter.AddTableFilter<IDeleteable>(d => !d.IsDeleted);
+            config.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
             if (hostEnvironment.IsDevelopment() || hostEnvironment.IsStaging())
             {
                 config.Aop.OnLogExecuting = (sql, parameters) => { Log.Logger.Information(sql); };

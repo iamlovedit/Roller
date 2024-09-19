@@ -12,28 +12,30 @@ public static class CorsSetup
         ArgumentNullException.ThrowIfNull(configuration);
 
         var corsOptions = configuration.GetSection(CrossOptions.Name).Get<CrossOptions>();
-        if (corsOptions?.Enable ?? false)
+        if (corsOptions is null || !corsOptions.Enable)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy(corsOptions.PolicyName, policy =>
-                {
-                    if (corsOptions.AllowAnyHeader)
-                    {
-                        policy.AllowAnyHeader();
-                    }
-
-                    if (corsOptions.AllowAnyMethod)
-                    {
-                        policy.AllowAnyMethod();
-                    }
-
-                    if (corsOptions.AllowAnyOrigin)
-                    {
-                        policy.AllowAnyOrigin();
-                    }
-                });
-            });
+            return;
         }
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy(corsOptions.PolicyName, policy =>
+            {
+                if (corsOptions.AllowAnyHeader)
+                {
+                    policy.AllowAnyHeader();
+                }
+
+                if (corsOptions.AllowAnyMethod)
+                {
+                    policy.AllowAnyMethod();
+                }
+
+                if (corsOptions.AllowAnyOrigin)
+                {
+                    policy.AllowAnyOrigin();
+                }
+            });
+        });
     }
 }

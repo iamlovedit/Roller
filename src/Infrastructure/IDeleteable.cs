@@ -1,6 +1,6 @@
 ﻿namespace Roller.Infrastructure;
 
-public interface IDeleteable
+public interface IDeletable
 {
     bool IsDeleted { get; set; }
 }

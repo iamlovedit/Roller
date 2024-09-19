@@ -62,8 +62,6 @@ public static class InfrastructureSetup
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
-        services.AddApiVersionSetup(configuration);
-
         services.AddSqlSugarSetup(configuration, builder.Environment);
 
         services.AddRedisCacheSetup(configuration);
@@ -73,6 +71,8 @@ public static class InfrastructureSetup
         services.AddJwtAuthenticationSetup(configuration);
 
         services.AddAuthorizationSetup(configuration);
+
+        services.AddEndpointsApiExplorer();
 
         services.AddSwaggerGen(options =>
         {
@@ -86,5 +86,6 @@ public static class InfrastructureSetup
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
         });
+        services.AddApiVersionSetup(configuration);
     }
 }
