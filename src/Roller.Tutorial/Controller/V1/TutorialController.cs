@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Roller.Infrastructure;
+using Roller.Infrastructure.Filters;
 
 namespace Roller.Tutorial.Controller.V1;
 
@@ -14,4 +15,18 @@ public class TutorialController(ILogger<TutorialController> logger) : RollerCont
         logger.LogInformation("hello world");
         return await Task.Run(() => Success<string>("hello world"));
     }
+
+    [Idempotency(60)]
+    [HttpPost]
+    public async Task<MessageData> TestAsync([FromBody] Account account)
+    {
+        return Success();
+    }
+}
+
+public class Account
+{
+    public string Username { get; set; }
+
+    public string Password { get; set; }
 }

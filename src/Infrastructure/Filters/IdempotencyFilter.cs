@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -12,9 +13,11 @@ using Roller.Infrastructure.Utils;
 namespace Roller.Infrastructure.Filters;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class IdempotencyAttribute(int seconds = 5) : Attribute
+public class IdempotencyAttribute(int seconds = 5, string message = "请求过于频繁") : Attribute
 {
     public int Seconds { get; set; } = seconds;
+
+    public string Message { get; set; } = message;
 }
 
 public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRepository redis) : IAsyncActionFilter
@@ -30,11 +33,15 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
                 await next();
             }
 
-            var request = context.HttpContext.Request;
-            using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
-            var body = await reader.ReadToEndAsync();
-            request.Body.Position = 0;
 
+            var request = context.HttpContext.Request;
+            if (request.Body.CanSeek)
+            {
+                request.EnableBuffering(); 
+            }
+            request.Body.Position = 0;
+            using var reader = new StreamReader(request.Body, Encoding.UTF8);
+            var body = await reader.ReadToEndAsync();
             var hashBytes = MD5.HashData(Encoding.ASCII.GetBytes(body));
             var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
@@ -44,7 +51,7 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
             {
                 logger.LogWarning("路径 {path} 请求频繁，请求ip：{ip}", request.Path,
                     context.HttpContext.GetRequestIp());
-                var message = new MessageData(false, "非法请求", 409);
+                var message = new MessageData(false, idempotencyAttribute.Message, 409);
                 context.Result = new ObjectResult(message) { StatusCode = 200 };
             }
             else
