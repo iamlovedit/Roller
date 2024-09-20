@@ -23,6 +23,7 @@ public class GlobalExceptionsFilter(ILogger<GlobalExceptionsFilter> logger) : IA
                 }
                 else
                 {
+                    logger.LogError(context.Exception.Message);
                     message = new MessageData(false, context.Exception.Message, 500);
                 }
 

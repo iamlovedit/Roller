@@ -18,16 +18,6 @@ public static class InfrastructureSetup
 {
     public static void AddInfrastructureSetup(this WebApplicationBuilder builder)
     {
-        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            DateFormatString = "yyyy-MM-dd HH:mm:ss",
-            DateTimeZoneHandling = DateTimeZoneHandling.Local,
-        };
-
         ArgumentNullException.ThrowIfNull(builder);
         var services = builder.Services;
         var configuration = builder.Configuration;
@@ -48,19 +38,6 @@ public static class InfrastructureSetup
         });
 
         services.AddCorsSetup(configuration);
-
-        services.AddControllers(options => { options.Filters.Add(typeof(GlobalExceptionsFilter)); })
-            .AddNewtonsoftJson(
-                options =>
-                {
-                    options.SerializerSettings.Formatting = Formatting.Indented;
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                });
 
         services.AddSqlSugarSetup(configuration, builder.Environment);
 
@@ -87,5 +64,22 @@ public static class InfrastructureSetup
             });
         });
         services.AddApiVersionSetup(configuration);
+
+        services.AddControllers(options =>
+            {
+                options.Filters.Add<GlobalExceptionsFilter>();
+                options.Filters.Add<IdempotencyFilter>();
+            })
+            .AddNewtonsoftJson(
+                options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
     }
 }

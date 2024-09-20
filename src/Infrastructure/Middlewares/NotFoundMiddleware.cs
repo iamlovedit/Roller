@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Roller.Infrastructure.Utils;
 
-namespace Roller.Infrastructure.Filters;
+namespace Roller.Infrastructure.Middlewares;
 
 public class NotFoundMiddleware(RequestDelegate next)
 {

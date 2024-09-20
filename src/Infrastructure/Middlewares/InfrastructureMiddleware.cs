@@ -1,12 +1,10 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Roller.Infrastructure.Exceptions;
-using Roller.Infrastructure.Filters;
 using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Seed;
 using Roller.Infrastructure.Utils;
@@ -30,7 +28,7 @@ public static class InfrastructureMiddleware
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseVersionedSwaggerUI();
         }
 
         app.UseExceptionHandler(builder =>
@@ -42,28 +40,20 @@ public static class InfrastructureMiddleware
                 var logger = context.RequestServices.GetService<ILogger>();
                 var exceptionHandlerPathFeature =
                     context.Features.Get<IExceptionHandlerPathFeature>();
-                if (exceptionHandlerPathFeature?.Error is FriendlyException friendlyException)
-                {
-                    var message = friendlyException.ConvertToMessage();
-                    await context.Response.WriteAsync(message.Serialize());
-                }
-                else
-                {
-                    var message = new MessageData(false, "An exception was thrown", 500);
-                    logger?.Error(exceptionHandlerPathFeature?.Error.Message);
-                    await context.Response.WriteAsync(message.Serialize());
-                }
+                var message = new MessageData(false, "发生未知错误", 500);
+                logger?.Error(exceptionHandlerPathFeature?.Error.Message!);
+                await context.Response.WriteAsync(message.Serialize());
             });
         });
         app.UseCors(CrossOptions.Name);
 
         app.UseAuthentication();
 
+        app.UseAuthorization();
+
         app.UseRouting();
 
         app.UseSerilogLogging();
-
-        app.UseAuthorization();
 
         app.MapControllers();
 
@@ -81,14 +71,7 @@ public static class InfrastructureMiddleware
             {
                 diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
                 diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-                if (httpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var value))
-                {
-                    diagnosticContext.Set("RemoteIpAddress", value.ToString());
-                }
-                else
-                {
-                    diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress?.MapToIPv4());
-                }
+                diagnosticContext.Set("RemoteIpAddress", httpContext.GetRequestIp());
             };
         });
     }

@@ -19,7 +19,7 @@ public static class CorsSetup
 
         services.AddCors(options =>
         {
-            options.AddPolicy(corsOptions.PolicyName, policy =>
+            options.AddPolicy(CrossOptions.Name, policy =>
             {
                 if (corsOptions.AllowAnyHeader)
                 {
