@@ -1,24 +1,15 @@
 ﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Roller.Infrastructure.Attributes;
 using Roller.Infrastructure.Cache;
 using Roller.Infrastructure.Utils;
 
 namespace Roller.Infrastructure.Filters;
-
-[AttributeUsage(AttributeTargets.Method)]
-public class IdempotencyAttribute(int seconds = 5, string message = "请求过于频繁") : Attribute
-{
-    public int Seconds { get; set; } = seconds;
-
-    public string Message { get; set; } = message;
-}
 
 public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRepository redis) : IAsyncActionFilter
 {
@@ -33,15 +24,13 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
                 await next();
             }
 
+            if (!context.ActionArguments.TryGetValue(idempotencyAttribute!.Parameter, out var value))
+            {
+                await next();
+            }
 
             var request = context.HttpContext.Request;
-            if (request.Body.CanSeek)
-            {
-                request.EnableBuffering(); 
-            }
-            request.Body.Position = 0;
-            using var reader = new StreamReader(request.Body, Encoding.UTF8);
-            var body = await reader.ReadToEndAsync();
+            var body = value!.Serialize();
             var hashBytes = MD5.HashData(Encoding.ASCII.GetBytes(body));
             var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
