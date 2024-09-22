@@ -3,8 +3,8 @@ using Roller.Infrastructure.SetupExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddInfrastructureSetup();
-
-var app = builder.Build();
+var app = builder
+    .AddInfrastructureSetup()
+    .Build();
 
 app.UseInfrastructure();
