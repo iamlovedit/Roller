@@ -11,14 +11,14 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SerilogSetup
 {
-    public static void AddSerilogSetup(this WebApplicationBuilder builder)
+    public static IServiceCollection AddSerilogSetup(this IServiceCollection services, IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        var configuration = builder.Configuration;
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
         var serilogOptions = configuration.GetSection(SerilogOptions.Name).Get<SerilogOptions>();
         if (serilogOptions is null || !serilogOptions.Enable)
         {
-            return;
+            return services;
         }
 
         var loggerConfiguration = new LoggerConfiguration()
@@ -44,14 +44,7 @@ public static class SerilogSetup
                 apiKey: configuration["SEQ_APIKEY"] ?? serilogOptions.SeqOptions.Secret);
         }
 
-        Log.Logger = loggerConfiguration.CreateLogger();
-
-        builder.Services.AddLogging(logBuilder =>
-        {
-            logBuilder.ClearProviders();
-            logBuilder.AddSerilog(Log.Logger);
-        });
-
-        builder.Host.UseSerilog(Log.Logger, true);
+        services.AddLogging(logBuilder => { logBuilder.AddSerilog(loggerConfiguration.CreateLogger()); });
+        return services;
     }
 }

@@ -2,38 +2,22 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Roller.Infrastructure.Utils;
 using SqlSugar;
 
 namespace Roller.Infrastructure.Seed;
 
-public class DatabaseSeed
+public class DatabaseSeed(DatabaseContext databaseContext, ILogger<DatabaseSeed> logger)
 {
-    private readonly DatabaseContext _databaseContext;
-    private readonly ILogger<DatabaseSeed> _logger;
-
-    public DatabaseSeed(DatabaseContext databaseContext, ILogger<DatabaseSeed> logger)
-    {
-        _databaseContext = databaseContext;
-        _logger = logger;
-        var setting = new JsonSerializerSettings();
-        JsonConvert.DefaultSettings = new Func<JsonSerializerSettings>(() =>
-        {
-            setting.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            setting.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-            setting.NullValueHandling = NullValueHandling.Ignore;
-            return setting;
-        });
-    }
-
     public void GenerateTablesByClass<T>() where T : class, new()
     {
-        if (_databaseContext.DbType == DbType.Oracle)
+        if (databaseContext.DbType == DbType.Oracle)
         {
             throw new InvalidOperationException("暂不支持Oracle数据库");
         }
         else
         {
-            _databaseContext.Database.DbMaintenance.CreateDatabase();
+            databaseContext.Database.DbMaintenance.CreateDatabase();
         }
 
         try
@@ -49,12 +33,12 @@ public class DatabaseSeed
             {
                 var tableName = type.GetCustomAttribute<SugarTable>()?.TableName ?? type.Name;
                 Console.WriteLine($"table is initializing: {tableName}");
-                _databaseContext.Database.CodeFirst.InitTables(type);
+                databaseContext.Database.CodeFirst.InitTables(type);
             }
         }
         catch (Exception e)
         {
-            _logger.LogError(e.Message);
+            logger.LogError(e.Message);
             throw;
         }
     }
@@ -73,7 +57,7 @@ public class DatabaseSeed
 
         try
         {
-            if (await _databaseContext.Database.Queryable<T>().AnyAsync())
+            if (await databaseContext.Database.Queryable<T>().AnyAsync())
             {
                 return;
             }
@@ -84,12 +68,12 @@ public class DatabaseSeed
                 return;
             }
 
-            var data = JsonConvert.DeserializeObject<List<T>>(json);
-            await _databaseContext.GetEntityDatabase<T>().InsertRangeAsync(data);
+            var data = json.Deserialize<List<T>>();
+            await databaseContext.GetEntityDatabase<T>().InsertRangeAsync(data);
         }
         catch (Exception e)
         {
-            _logger.LogError(e.Message);
+            logger.LogError(e.Message);
             throw;
         }
     }

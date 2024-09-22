@@ -16,7 +16,7 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class InfrastructureSetup
 {
-    public static void AddInfrastructureSetup(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddInfrastructureSetup(this WebApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
         var services = builder.Services;
@@ -43,7 +43,7 @@ public static class InfrastructureSetup
 
         services.AddRedisCacheSetup(configuration);
 
-        builder.AddSerilogSetup();
+        services.AddSerilogSetup(configuration);
 
         services.AddJwtAuthenticationSetup(configuration);
 
@@ -81,5 +81,6 @@ public static class InfrastructureSetup
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
+        return builder;
     }
 }

@@ -13,7 +13,8 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class JwtAuthenticationSetup
 {
-    public static void AddJwtAuthenticationSetup(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtAuthenticationSetup(this IServiceCollection services,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -21,7 +22,7 @@ public static class JwtAuthenticationSetup
         var audienceOptions = configuration.GetSection(AudienceOptions.Name).Get<AudienceOptions>();
         if (audienceOptions is null || !audienceOptions.Enable)
         {
-            return;
+            return services;
         }
 
         var key = configuration["AUDIENCE_KEY"] ?? audienceOptions.Secret;
@@ -44,23 +45,25 @@ public static class JwtAuthenticationSetup
         };
 
         services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = nameof(RollerAuthenticationHandler);
-            options.DefaultForbidScheme = nameof(RollerAuthenticationHandler);
-        }).AddScheme<AuthenticationSchemeOptions, RollerAuthenticationHandler>(nameof(RollerAuthenticationHandler),
-            options => { }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = tokenValidationParameters;
-            options.Events = new JwtBearerEvents()
             {
-                OnChallenge = challengeContext =>
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = nameof(RollerAuthenticationHandler);
+                options.DefaultForbidScheme = nameof(RollerAuthenticationHandler);
+            }).AddScheme<AuthenticationSchemeOptions, RollerAuthenticationHandler>(nameof(RollerAuthenticationHandler),
+                options => { })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = tokenValidationParameters;
+                options.Events = new JwtBearerEvents()
                 {
-                    challengeContext.Response.Headers.Append(
-                        new KeyValuePair<string, StringValues>("token-error", challengeContext.ErrorDescription));
-                    return Task.CompletedTask;
-                },
-            };
-        });
+                    OnChallenge = challengeContext =>
+                    {
+                        challengeContext.Response.Headers.Append(
+                            new KeyValuePair<string, StringValues>("token-error", challengeContext.ErrorDescription));
+                        return Task.CompletedTask;
+                    },
+                };
+            });
+        return services;
     }
 }

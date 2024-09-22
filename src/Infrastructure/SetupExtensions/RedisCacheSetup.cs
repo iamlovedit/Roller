@@ -8,14 +8,14 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class RedisCacheSetup
 {
-    public static void AddRedisCacheSetup(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRedisCacheSetup(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-
+        ArgumentNullException.ThrowIfNull(configuration);
         var redisOptions = configuration.GetSection(RedisOptions.Name).Get<RedisOptions>();
         if (redisOptions is null || !redisOptions.Enable)
         {
-            return;
+            return services;
         }
 
         services.AddScoped<IRedisBasketRepository, RedisBasketRepository>();
@@ -31,5 +31,6 @@ public static class RedisCacheSetup
             redisConfig.ResolveDns = true;
             return ConnectionMultiplexer.Connect(redisConfig);
         });
+        return services;
     }
 }

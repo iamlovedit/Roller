@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Security;
-using SqlSugar.Extensions;
 
 namespace Roller.Infrastructure.SetupExtensions
 {
     public static class AuthorizationSetup
     {
-        public static void AddAuthorizationSetup(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuthorizationSetup(this IServiceCollection services,
+            IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -20,7 +20,7 @@ namespace Roller.Infrastructure.SetupExtensions
             var audienceOptions = configuration.GetSection(AudienceOptions.Name).Get<AudienceOptions>();
             if (audienceOptions is null || !audienceOptions.Enable)
             {
-                return;
+                return services;
             }
 
             var key = configuration["AUDIENCE_KEY"] ?? audienceOptions.Secret;
@@ -33,9 +33,12 @@ namespace Roller.Infrastructure.SetupExtensions
                 audienceOptions.Audience,
                 TimeSpan.FromSeconds(audienceOptions.Expiration), signingCredentials));
             services.AddAuthorizationBuilder()
-                .AddPolicy(PermissionConstants.PolicyName, policy => policy.RequireRole(
-                    PermissionConstants.Consumer, PermissionConstants.Administrator,
-                    PermissionConstants.SuperAdministrator).Build());
+                .AddPolicy(PermissionConstants.PolicyName,
+                    policy => policy.RequireRole(
+                            PermissionConstants.Consumer, PermissionConstants.Administrator,
+                            PermissionConstants.SuperAdministrator)
+                        .Build());
+            return services;
         }
     }
 }

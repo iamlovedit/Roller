@@ -11,7 +11,7 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SqlSugarSetup
 {
-    public static void AddSqlSugarSetup(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection AddSqlSugarSetup(this IServiceCollection services, IConfiguration configuration,
         IWebHostEnvironment hostEnvironment)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -23,7 +23,7 @@ public static class SqlSugarSetup
         var sqlSugarOptions = configuration.GetSection(SqlSugarOptions.Name).Get<SqlSugarOptions>();
         if (sqlSugarOptions is null || !sqlSugarOptions.Enable)
         {
-            return;
+            return services;
         }
 
         if (sqlSugarOptions.SnowFlake?.Enable ?? false)
@@ -72,5 +72,6 @@ public static class SqlSugarSetup
             }
         });
         services.AddSingleton<ISqlSugarClient>(sugarScope);
+        return services;
     }
 }
