@@ -22,11 +22,13 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
             if (idempotencyAttribute is null)
             {
                 await next();
+                return;
             }
 
             if (!context.ActionArguments.TryGetValue(idempotencyAttribute!.Parameter, out var value))
             {
                 await next();
+                return;
             }
 
             var request = context.HttpContext.Request;
