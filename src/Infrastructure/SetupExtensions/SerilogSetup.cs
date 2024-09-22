@@ -44,7 +44,12 @@ public static class SerilogSetup
                 apiKey: configuration["SEQ_APIKEY"] ?? serilogOptions.SeqOptions.Secret);
         }
 
-        services.AddLogging(logBuilder => { logBuilder.AddSerilog(loggerConfiguration.CreateLogger()); });
+        Log.Logger = loggerConfiguration.CreateLogger();
+        services.AddLogging(logBuilder =>
+        {
+            logBuilder.ClearProviders();
+            logBuilder.AddSerilog(Log.Logger);
+        });
         return services;
     }
 }

@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using Roller.Infrastructure.Filters;
 using Roller.Infrastructure.Repository;
 using Roller.Infrastructure.Security;
+using Serilog;
 
 namespace Roller.Infrastructure.SetupExtensions;
 
@@ -81,6 +82,7 @@ public static class InfrastructureSetup
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
+        builder.Host.UseSerilog(Log.Logger, true);
         return builder;
     }
 }
