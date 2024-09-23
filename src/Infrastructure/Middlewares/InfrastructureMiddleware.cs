@@ -18,19 +18,6 @@ public static class InfrastructureMiddleware
     {
         ArgumentNullException.ThrowIfNull(app);
 
-        app.UseMiddleware<NotFoundMiddleware>();
-
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-        });
-
-        if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
-        {
-            app.UseSwagger();
-            app.UseVersionedSwaggerUI();
-        }
-
         app.UseExceptionHandler(builder =>
         {
             builder.Run(async context =>
@@ -45,17 +32,32 @@ public static class InfrastructureMiddleware
                 await context.Response.WriteAsync(message.Serialize());
             });
         });
+
+        app.UseRouting();
+
         app.UseCors(CrossOptions.Name);
+
+        app.UseMiddleware<NotFoundMiddleware>();
 
         app.UseAuthentication();
 
         app.UseAuthorization();
 
-        app.UseRouting();
 
-        app.UseSerilogLogging();
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
+
+        if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+        {
+            app.UseSwagger();
+            app.UseVersionedSwaggerUI();
+        }
 
         app.MapControllers();
+
+        app.UseSerilogLogging();
 
         app.Run();
     }
