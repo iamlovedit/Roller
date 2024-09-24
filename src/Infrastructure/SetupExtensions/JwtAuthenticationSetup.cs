@@ -14,7 +14,7 @@ namespace Roller.Infrastructure.SetupExtensions;
 public static class JwtAuthenticationSetup
 {
     public static IServiceCollection AddJwtAuthenticationSetup(this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration, Action<AuthenticationBuilder>? builderAction = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -44,7 +44,7 @@ public static class JwtAuthenticationSetup
             RoleClaimType = ClaimTypes.Role
         };
 
-        services.AddAuthentication(options =>
+        var builder = services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = nameof(RollerAuthenticationHandler);
@@ -64,6 +64,8 @@ public static class JwtAuthenticationSetup
                     },
                 };
             });
+        builderAction?.Invoke(builder);
+
         return services;
     }
 }
