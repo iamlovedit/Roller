@@ -1,10 +1,7 @@
 ﻿using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Roller.Infrastructure.Utils;
 
 namespace Roller.Infrastructure.Security
 {

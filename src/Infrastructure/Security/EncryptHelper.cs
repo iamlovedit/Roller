@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-
-namespace Roller.Infrastructure.Security
+﻿namespace Roller.Infrastructure.Security
 {
     public static class EncryptHelper
     {

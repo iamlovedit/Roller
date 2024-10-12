@@ -1,0 +1,16 @@
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Roller.Infrastructure.Options;
+global using Serilog;
+global using SqlSugar;
+global using SqlSugar.Extensions;
+global using System.Security.Cryptography;
+global using System.Text;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.HttpOverrides;
+global using Roller.Infrastructure.Seed;
+global using Roller.Infrastructure.Utils;

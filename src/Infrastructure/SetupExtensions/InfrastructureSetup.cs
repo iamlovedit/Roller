@@ -1,8 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -11,7 +9,6 @@ using Newtonsoft.Json.Serialization;
 using Roller.Infrastructure.Filters;
 using Roller.Infrastructure.Repository;
 using Roller.Infrastructure.Security;
-using Serilog;
 
 namespace Roller.Infrastructure.SetupExtensions;
 

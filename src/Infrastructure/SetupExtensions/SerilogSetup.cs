@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Roller.Infrastructure.Options;
-using Serilog;
+﻿using Microsoft.Extensions.Logging;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 

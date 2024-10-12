@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Roller.Infrastructure.Seed;
-
-namespace Roller.Infrastructure.SetupExtensions
+﻿namespace Roller.Infrastructure.SetupExtensions
 {
     public static class DatabaseSeedSetup
     {

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Roller.Infrastructure.Cache;
-using Roller.Infrastructure.Options;
+﻿using Roller.Infrastructure.Cache;
 using StackExchange.Redis;
 
 namespace Roller.Infrastructure.SetupExtensions;

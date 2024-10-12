@@ -1,16 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Roller.Infrastructure.Exceptions;
-using Roller.Infrastructure.Options;
-using Roller.Infrastructure.Seed;
-using Roller.Infrastructure.Utils;
-using Serilog;
-
-namespace Roller.Infrastructure.Middlewares;
+﻿namespace Roller.Infrastructure.Middlewares;
 
 public static class InfrastructureMiddleware
 {
@@ -24,11 +12,10 @@ public static class InfrastructureMiddleware
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = StatusCodes.Status200OK;
-                var logger = context.RequestServices.GetService<ILogger>();
                 var exceptionHandlerPathFeature =
                     context.Features.Get<IExceptionHandlerPathFeature>();
                 var message = new MessageData(false, "发生未知错误", 500);
-                logger?.Error(exceptionHandlerPathFeature?.Error.Message!);
+                Log.Logger?.Error(exceptionHandlerPathFeature?.Error.Message!);
                 await context.Response.WriteAsync(message.Serialize());
             });
         });

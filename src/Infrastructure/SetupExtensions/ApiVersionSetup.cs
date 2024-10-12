@@ -1,7 +1,4 @@
 ﻿using Asp.Versioning;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions;
 

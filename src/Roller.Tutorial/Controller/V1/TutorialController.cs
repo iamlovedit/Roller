@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Roller.Infrastructure;
 using Roller.Infrastructure.Attributes;
-using Roller.Infrastructure.Filters;
 
 namespace Roller.Tutorial.Controller.V1;
 

@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Roller.Infrastructure.Options;
-
-namespace Roller.Infrastructure.SetupExtensions;
+﻿namespace Roller.Infrastructure.SetupExtensions;
 
 public static class CorsSetup
 {

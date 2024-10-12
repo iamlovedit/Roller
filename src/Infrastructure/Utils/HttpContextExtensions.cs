@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-namespace Roller.Infrastructure.Utils;
+﻿namespace Roller.Infrastructure.Utils;
 
 public static class HttpContextExtensions
 {
