@@ -6,11 +6,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Roller.Infrastructure.Security;
 
-public class TokenBuilder(
+public abstract class TokenBuilderBase<TId>(
     IAesEncryptionService aesEncryptionService,
     PermissionRequirement permissionRequirement,
+    JwtSecurityTokenHandler jwtSecurityTokenHandler,
     IConfiguration configuration)
-    : ITokenBuilder
+    : ITokenBuilder<TId> where TId : IEquatable<TId>
 {
     public string DecryptCipherToken(string cipherToken)
     {
@@ -22,7 +23,7 @@ public class TokenBuilder(
         return aesEncryptionService.Decrypt(cipherToken);
     }
 
-    public TokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims)
+    public JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims)
     {
         var jwtToken = new JwtSecurityToken(
             issuer: permissionRequirement.Issuer,
@@ -31,9 +32,10 @@ public class TokenBuilder(
             notBefore: DateTime.Now,
             expires: DateTime.Now.Add(permissionRequirement.Expiration),
             signingCredentials: permissionRequirement.SigningCredentials);
-        var token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        var token = jwtSecurityTokenHandler.WriteToken(jwtToken);
         token = aesEncryptionService.Encrypt(token);
-        return new TokenInfo(token, permissionRequirement.Expiration.TotalSeconds, JwtBearerDefaults.AuthenticationScheme);
+        return new JwtTokenInfo(token, permissionRequirement.Expiration.TotalSeconds,
+            JwtBearerDefaults.AuthenticationScheme);
     }
 
     public double GetTokenExpirationSeconds()
@@ -43,26 +45,31 @@ public class TokenBuilder(
 
     public long ParseUIdFromToken(string token)
     {
-        var jwtHandler = new JwtSecurityTokenHandler();
-        if (jwtHandler.CanReadToken(token))
+        if (jwtSecurityTokenHandler.CanReadToken(token))
         {
-            var jwtToken = jwtHandler.ReadJwtToken(token);
+            var jwtToken = jwtSecurityTokenHandler.ReadJwtToken(token);
             if (long.TryParse(jwtToken.Id, out var id))
             {
                 return id;
             }
         }
+
         return 0;
+    }
+
+    public IList<Claim> GetClaimsFromUserContext(IUserContext<TId> userContext)
+    {
+        throw new NotImplementedException();
     }
 
     public bool VerifyToken(string token)
     {
-        var jwtHandler = new JwtSecurityTokenHandler();
         var key = configuration["AUDIENCE_KEY"];
         var keyBuffer = Encoding.ASCII.GetBytes(key!);
         var signingKey = new SymmetricSecurityKey(keyBuffer);
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-        var jwt = jwtHandler.ReadJwtToken(token);
-        return jwt.RawSignature == JwtTokenUtilities.CreateEncodedSignature(jwt.RawHeader + "." + jwt.RawPayload, signingCredentials);
+        var jwt = jwtSecurityTokenHandler.ReadJwtToken(token);
+        return jwt.RawSignature ==
+               JwtTokenUtilities.CreateEncodedSignature(jwt.RawHeader + "." + jwt.RawPayload, signingCredentials);
     }
 }

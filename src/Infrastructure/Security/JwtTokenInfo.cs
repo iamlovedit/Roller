@@ -1,6 +1,6 @@
 ﻿namespace Roller.Infrastructure.Security;
 
-public class TokenInfo(double expiredIn, string tokenType)
+public class JwtTokenInfo(double expiredIn, string tokenType)
 {
     public string? Token { get; }
 
@@ -12,7 +12,7 @@ public class TokenInfo(double expiredIn, string tokenType)
 
     public double? RefreshExpiredIn { get; set; }
 
-    public TokenInfo(string token, double expiredIn, string tokenType) : this(expiredIn, tokenType)
+    public JwtTokenInfo(string token, double expiredIn, string tokenType) : this(expiredIn, tokenType)
     {
         Token = token;
     }

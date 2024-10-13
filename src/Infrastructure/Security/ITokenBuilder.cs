@@ -2,9 +2,9 @@
 
 namespace Roller.Infrastructure.Security;
 
-public interface ITokenBuilder
+public interface ITokenBuilder<TId> where TId : IEquatable<TId>
 {
-    TokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims);
+    JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims);
 
     string DecryptCipherToken(string cipherToken);
 
@@ -13,4 +13,6 @@ public interface ITokenBuilder
     double GetTokenExpirationSeconds();
 
     long ParseUIdFromToken(string token);
+
+    IList<Claim> GetClaimsFromUserContext(IUserContext<TId> userContext);
 }

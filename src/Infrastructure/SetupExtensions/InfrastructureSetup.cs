@@ -23,7 +23,7 @@ public static class InfrastructureSetup
         services.AddSingleton<RollerTokenHandler>();
         services.AddSingleton<IAesEncryptionService, AesEncryptionService>();
         services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerOptionsPostConfigureOptions>();
-        services.AddSingleton<ITokenBuilder, TokenBuilder>();
+        services.AddSingleton(typeof(ITokenBuilder<>), typeof(TokenBuilderBase<>));
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMapster();
