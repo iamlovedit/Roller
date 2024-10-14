@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Roller.Infrastructure.Options;
+using Roller.Infrastructure.Repository;
 using Serilog;
 using SqlSugar;
 using SqlSugar.Extensions;
@@ -23,6 +24,8 @@ public static class SqlSugarSetup
             return services;
         }
 
+        services.TryAddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+        services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         if (sqlSugarOptions.SnowFlake?.Enable ?? false)
         {
             var workerId = configuration["SNOWFLAKES_WORKERID"]?.ObjToInt() ?? sqlSugarOptions.SnowFlake?.WorkerId;

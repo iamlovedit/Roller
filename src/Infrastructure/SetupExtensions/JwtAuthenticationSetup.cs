@@ -18,6 +18,7 @@ public static class JwtAuthenticationSetup
             return services;
         }
 
+        services.TryAddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerOptionsPostConfigureOptions>();
         var key = configuration["AUDIENCE_KEY"] ?? audienceOptions.Secret;
         ArgumentException.ThrowIfNullOrEmpty(key);
         var buffer = Encoding.UTF8.GetBytes(key);
@@ -32,7 +33,7 @@ public static class JwtAuthenticationSetup
             ValidateAudience = true,
             ValidAudience = audienceOptions.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(15),
+            ClockSkew = TimeSpan.FromSeconds(300),
             RequireExpirationTime = true,
             RoleClaimType = ClaimTypes.Role
         };
@@ -44,19 +45,7 @@ public static class JwtAuthenticationSetup
                 options.DefaultForbidScheme = nameof(RollerAuthenticationHandler);
             }).AddScheme<AuthenticationSchemeOptions, RollerAuthenticationHandler>(nameof(RollerAuthenticationHandler),
                 options => { })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = tokenValidationParameters;
-                options.Events = new JwtBearerEvents()
-                {
-                    OnChallenge = challengeContext =>
-                    {
-                        challengeContext.Response.Headers.Append(
-                            new KeyValuePair<string, StringValues>("token-error", challengeContext.ErrorDescription));
-                        return Task.CompletedTask;
-                    },
-                };
-            });
+            .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
         builderAction?.Invoke(builder);
 
         return services;

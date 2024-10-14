@@ -1,8 +1,8 @@
 namespace Roller.Infrastructure.Security;
 
-public interface IUserContext<TId> where TId : IEquatable<TId>
+public interface IUserContext
 {
-    TId Id { get; set; }
+    long Id { get; set; }
 
     string Username { get; set; }
 
@@ -15,9 +15,9 @@ public interface IUserContext<TId> where TId : IEquatable<TId>
     string RemoteIpAddress { get; set; }
 }
 
-public abstract class UserContextBase<TId> : IUserContext<TId> where TId : IEquatable<TId>
+public class UserContext : IUserContext
 {
-    public TId Id { get; set; }
+    public long Id { get; set; }
 
     public string Username { get; set; }
 

@@ -12,7 +12,7 @@ public interface ITokenBuilder
 
     long ParseUIdFromToken(string token);
 
-    IList<Claim> GetClaimsFromUserContext<TId>(IUserContext<TId> userContext) where TId : IEquatable<TId>;
+    IList<Claim> GetClaimsFromUserContext(IUserContext userContext);
     
-    void SetUserContext(TokenValidatedContext context);
+    Task SetUserContext(TokenValidatedContext context);
 }

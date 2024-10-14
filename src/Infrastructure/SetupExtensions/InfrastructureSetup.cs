@@ -17,13 +17,9 @@ public static class InfrastructureSetup
         ArgumentNullException.ThrowIfNull(builder);
         var services = builder.Services;
         var configuration = builder.Configuration;
-        services.AddSingleton<JwtSecurityTokenHandler>();
-        services.AddSingleton<RollerTokenHandler>();
-        services.AddSingleton<IAesEncryptionService, AesEncryptionService>();
-        services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerOptionsPostConfigureOptions>();
-        services.AddSingleton(typeof(ITokenBuilder), typeof(TokenBuilderBase<>));
-        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddAesEncryption();
+        services.AddRollerTokenContext();
+        services.AddRollerUserContext();
         services.AddMapster();
         services.AddDatabaseSeedSetup();
 

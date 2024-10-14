@@ -2,11 +2,11 @@
 
 namespace Roller.Infrastructure.Security;
 
-public abstract class TokenBuilderBase<TId>(
+public class TokenBuilder(
     IAesEncryptionService aesEncryptionService,
     JwtOptions jwtOptions,
     JwtSecurityTokenHandler jwtSecurityTokenHandler)
-    : ITokenBuilder where TId : IEquatable<TId>
+    : ITokenBuilder
 {
     public virtual string DecryptCipherToken(string cipherToken)
     {
@@ -52,8 +52,7 @@ public abstract class TokenBuilderBase<TId>(
         return 0;
     }
 
-    public virtual IList<Claim> GetClaimsFromUserContext<TId1>(IUserContext<TId1> userContext)
-        where TId1 : IEquatable<TId1>
+    public virtual IList<Claim> GetClaimsFromUserContext(IUserContext userContext)
     {
         var claims = new List<Claim>()
         {
@@ -70,20 +69,23 @@ public abstract class TokenBuilderBase<TId>(
         return claims;
     }
 
-    public void SetUserContext(TokenValidatedContext context)
+    public Task SetUserContext(TokenValidatedContext context)
     {
-        var userContext =
-            context.HttpContext.RequestServices.GetService(typeof(IUserContext<TId>)) as IUserContext<TId> ??
-            throw new NullReferenceException(nameof(IUserContext<TId>));
-        var principal = context.Principal ?? throw new NullReferenceException(nameof(context.Principal));
-        var idClaim = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId);
-        userContext.Id = (TId)Convert.ChangeType(idClaim.Value, typeof(TId));
-        userContext.Username =
-            principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
-        userContext.Name = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
-        userContext.Email = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
-        userContext.RoleIds = principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
-        userContext.RemoteIpAddress = context.HttpContext.GetRequestIp()!;
+        return Task.Run(() =>
+        {
+            var userContext =
+                context.HttpContext.RequestServices.GetService<IUserContext>() ??
+                throw new NullReferenceException(nameof(IUserContext));
+            var principal = context.Principal ?? throw new NullReferenceException(nameof(context.Principal));
+            var idClaim = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId);
+            userContext.Id = long.Parse(idClaim.Value);
+            userContext.Username =
+                principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
+            userContext.Name = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+            userContext.Email = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+            userContext.RoleIds = principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+            userContext.RemoteIpAddress = context.HttpContext.GetRequestIp()!;
+        });
     }
 
     public bool VerifyToken(string token)
