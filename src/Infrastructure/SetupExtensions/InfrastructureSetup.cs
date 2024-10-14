@@ -17,10 +17,15 @@ public static class InfrastructureSetup
         var services = builder.Services;
         var configuration = builder.Configuration;
         services.AddAesEncryption();
+
         services.AddRollerTokenContext();
-        services.AddRollerUserContext();
+
         services.AddHttpContextAccessor();
+
+        services.AddRollerUserContext<long>();
+
         services.AddMapster();
+
         services.AddDatabaseSeedSetup();
 
         services.AddRouting(options =>
