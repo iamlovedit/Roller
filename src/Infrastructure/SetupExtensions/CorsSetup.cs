@@ -1,4 +1,6 @@
-﻿namespace Roller.Infrastructure.SetupExtensions;
+﻿using Roller.Infrastructure.Options;
+
+namespace Roller.Infrastructure.SetupExtensions;
 
 public static class CorsSetup
 {

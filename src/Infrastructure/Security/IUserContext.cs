@@ -15,7 +15,7 @@ public interface IUserContext<TId> where TId : IEquatable<TId>
     string RemoteIpAddress { get; set; }
 }
 
-public class UserContext<TId> : IUserContext<TId> where TId : IEquatable<TId>
+public abstract class UserContextBase<TId> : IUserContext<TId> where TId : IEquatable<TId>
 {
     public TId Id { get; set; }
 

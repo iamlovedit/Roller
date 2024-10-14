@@ -1,7 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Roller.Infrastructure.Security;
+﻿namespace Roller.Infrastructure.Security;
 
 public class RollerTokenHandler(
     IAesEncryptionService aesEncryptionService,

@@ -1,9 +1,6 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
-using Roller.Infrastructure.Security;
+using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions;
 

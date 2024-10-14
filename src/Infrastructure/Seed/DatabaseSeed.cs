@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
+﻿using SqlSugar;
 
 namespace Roller.Infrastructure.Seed;
 

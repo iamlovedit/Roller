@@ -1,8 +1,6 @@
-﻿using System.Security.Claims;
+﻿namespace Roller.Infrastructure.Security;
 
-namespace Roller.Infrastructure.Security;
-
-public interface ITokenBuilder<TId> where TId : IEquatable<TId>
+public interface ITokenBuilder
 {
     JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims);
 
@@ -14,5 +12,7 @@ public interface ITokenBuilder<TId> where TId : IEquatable<TId>
 
     long ParseUIdFromToken(string token);
 
-    IList<Claim> GetClaimsFromUserContext(IUserContext<TId> userContext);
+    IList<Claim> GetClaimsFromUserContext<TId>(IUserContext<TId> userContext) where TId : IEquatable<TId>;
+    
+    void SetUserContext(TokenValidatedContext context);
 }

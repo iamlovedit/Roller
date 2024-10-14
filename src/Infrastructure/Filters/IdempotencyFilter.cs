@@ -1,10 +1,6 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using Roller.Infrastructure.Attributes;
-using Roller.Infrastructure.Cache;
 
 namespace Roller.Infrastructure.Filters;
 

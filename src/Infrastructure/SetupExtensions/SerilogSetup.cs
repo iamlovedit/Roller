@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Roller.Infrastructure.Options;
+using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 

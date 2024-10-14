@@ -1,14 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Mapster;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
+﻿using Mapster;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Roller.Infrastructure.Filters;
 using Roller.Infrastructure.Repository;
-using Roller.Infrastructure.Security;
+using Serilog;
 
 namespace Roller.Infrastructure.SetupExtensions;
 
@@ -23,7 +21,7 @@ public static class InfrastructureSetup
         services.AddSingleton<RollerTokenHandler>();
         services.AddSingleton<IAesEncryptionService, AesEncryptionService>();
         services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerOptionsPostConfigureOptions>();
-        services.AddSingleton(typeof(ITokenBuilder<>), typeof(TokenBuilderBase<>));
+        services.AddSingleton(typeof(ITokenBuilder), typeof(TokenBuilderBase<>));
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMapster();

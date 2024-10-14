@@ -1,4 +1,5 @@
 ﻿using Roller.Infrastructure.Cache;
+using Roller.Infrastructure.Options;
 using StackExchange.Redis;
 
 namespace Roller.Infrastructure.SetupExtensions;

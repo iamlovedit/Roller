@@ -1,8 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
-
-namespace Roller.Infrastructure.Security
+﻿namespace Roller.Infrastructure.Security
 {
-    public class PermissionRequirement(
+    public class JwtOptions(
         string claimType,
         string issuer,
         string audience,

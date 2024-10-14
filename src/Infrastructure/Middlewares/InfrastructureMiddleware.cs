@@ -1,4 +1,10 @@
-﻿namespace Roller.Infrastructure.Middlewares;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.HttpOverrides;
+using Roller.Infrastructure.Options;
+using Serilog;
+
+namespace Roller.Infrastructure.Middlewares;
 
 public static class InfrastructureMiddleware
 {

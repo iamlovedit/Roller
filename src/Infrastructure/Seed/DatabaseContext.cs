@@ -1,4 +1,6 @@
-﻿namespace Roller.Infrastructure.Seed;
+﻿using SqlSugar;
+
+namespace Roller.Infrastructure.Seed;
 
 public class DatabaseContext
 {

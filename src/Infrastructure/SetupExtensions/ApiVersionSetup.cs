@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions;
 

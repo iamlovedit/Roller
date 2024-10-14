@@ -1,4 +1,6 @@
-﻿namespace Roller.Infrastructure.Repository;
+﻿using SqlSugar;
+
+namespace Roller.Infrastructure.Repository;
 
 public interface IUnitOfWork
 {

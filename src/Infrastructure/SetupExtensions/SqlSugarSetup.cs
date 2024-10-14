@@ -1,4 +1,10 @@
-﻿namespace Roller.Infrastructure.SetupExtensions;
+﻿using Microsoft.AspNetCore.Hosting;
+using Roller.Infrastructure.Options;
+using Serilog;
+using SqlSugar;
+using SqlSugar.Extensions;
+
+namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SqlSugarSetup
 {

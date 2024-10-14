@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using Roller.Infrastructure.Security;
+﻿using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions
 {
@@ -25,7 +23,7 @@ namespace Roller.Infrastructure.SetupExtensions
             var securityKey = new SymmetricSecurityKey(buffer);
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            services.AddSingleton(new PermissionRequirement(ClaimTypes.Role, audienceOptions.Issuer,
+            services.AddSingleton(new JwtOptions(ClaimTypes.Role, audienceOptions.Issuer,
                 audienceOptions.Audience,
                 TimeSpan.FromSeconds(audienceOptions.Expiration), signingCredentials));
             services.AddAuthorizationBuilder()

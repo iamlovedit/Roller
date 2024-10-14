@@ -1,4 +1,5 @@
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Builder;
 
 namespace Roller.Infrastructure.Middlewares;
 

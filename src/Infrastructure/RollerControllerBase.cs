@@ -1,8 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
-
-namespace Roller.Infrastructure;
+﻿namespace Roller.Infrastructure;
 
 [ApiController]
 [Produces("application/json")]
@@ -55,12 +51,5 @@ public class RollerControllerBase : ControllerBase
     public static MessageData<PageData<T>> SucceedPage<T>(PageData<T> page, string message = "获取成功")
     {
         return new MessageData<PageData<T>>(true, message, page);
-    }
-
-    [NonAction]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public long GetUserIdFromClaims()
-    {
-        return long.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Jti) ?? "0");
     }
 }

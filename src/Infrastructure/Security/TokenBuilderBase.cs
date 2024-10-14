@@ -1,19 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
+﻿using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Roller.Infrastructure.Security;
 
 public abstract class TokenBuilderBase<TId>(
     IAesEncryptionService aesEncryptionService,
-    PermissionRequirement permissionRequirement,
-    JwtSecurityTokenHandler jwtSecurityTokenHandler,
-    IConfiguration configuration)
-    : ITokenBuilder<TId> where TId : IEquatable<TId>
+    JwtOptions jwtOptions,
+    JwtSecurityTokenHandler jwtSecurityTokenHandler)
+    : ITokenBuilder where TId : IEquatable<TId>
 {
-    public string DecryptCipherToken(string cipherToken)
+    public virtual string DecryptCipherToken(string cipherToken)
     {
         if (string.IsNullOrEmpty(cipherToken))
         {
@@ -23,24 +18,24 @@ public abstract class TokenBuilderBase<TId>(
         return aesEncryptionService.Decrypt(cipherToken);
     }
 
-    public JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims)
+    public virtual JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims)
     {
         var jwtToken = new JwtSecurityToken(
-            issuer: permissionRequirement.Issuer,
-            audience: permissionRequirement.Audience,
+            issuer: jwtOptions.Issuer,
+            audience: jwtOptions.Audience,
             claims: claims,
             notBefore: DateTime.Now,
-            expires: DateTime.Now.Add(permissionRequirement.Expiration),
-            signingCredentials: permissionRequirement.SigningCredentials);
+            expires: DateTime.Now.Add(jwtOptions.Expiration),
+            signingCredentials: jwtOptions.SigningCredentials);
         var token = jwtSecurityTokenHandler.WriteToken(jwtToken);
         token = aesEncryptionService.Encrypt(token);
-        return new JwtTokenInfo(token, permissionRequirement.Expiration.TotalSeconds,
+        return new JwtTokenInfo(token, jwtOptions.Expiration.TotalSeconds,
             JwtBearerDefaults.AuthenticationScheme);
     }
 
     public double GetTokenExpirationSeconds()
     {
-        return permissionRequirement.Expiration.TotalSeconds;
+        return jwtOptions.Expiration.TotalSeconds;
     }
 
     public long ParseUIdFromToken(string token)
@@ -57,19 +52,45 @@ public abstract class TokenBuilderBase<TId>(
         return 0;
     }
 
-    public IList<Claim> GetClaimsFromUserContext(IUserContext<TId> userContext)
+    public virtual IList<Claim> GetClaimsFromUserContext<TId1>(IUserContext<TId1> userContext)
+        where TId1 : IEquatable<TId1>
     {
-        throw new NotImplementedException();
+        var claims = new List<Claim>()
+        {
+            new(JwtRegisteredClaimNames.UniqueName, userContext.Username),
+            new(JwtRegisteredClaimNames.NameId, userContext.Id.ToString() ?? string.Empty),
+            new(JwtRegisteredClaimNames.Name, userContext.Name),
+            new(JwtRegisteredClaimNames.Email, userContext.Email),
+            new(JwtRegisteredClaimNames.Iat,
+                EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture),
+                ClaimValueTypes.Integer64),
+            new(JwtRegisteredClaimNames.Exp, jwtOptions.Expiration.ToString())
+        };
+        claims.AddRange(userContext.RoleIds.Select(rId => new Claim(ClaimTypes.Role, rId)));
+        return claims;
+    }
+
+    public void SetUserContext(TokenValidatedContext context)
+    {
+        var userContext =
+            context.HttpContext.RequestServices.GetService(typeof(IUserContext<TId>)) as IUserContext<TId> ??
+            throw new NullReferenceException(nameof(IUserContext<TId>));
+        var principal = context.Principal ?? throw new NullReferenceException(nameof(context.Principal));
+        var idClaim = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId);
+        userContext.Id = (TId)Convert.ChangeType(idClaim.Value, typeof(TId));
+        userContext.Username =
+            principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
+        userContext.Name = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+        userContext.Email = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+        userContext.RoleIds = principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+        userContext.RemoteIpAddress = context.HttpContext.GetRequestIp()!;
     }
 
     public bool VerifyToken(string token)
     {
-        var key = configuration["AUDIENCE_KEY"];
-        var keyBuffer = Encoding.ASCII.GetBytes(key!);
-        var signingKey = new SymmetricSecurityKey(keyBuffer);
-        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
         var jwt = jwtSecurityTokenHandler.ReadJwtToken(token);
         return jwt.RawSignature ==
-               JwtTokenUtilities.CreateEncodedSignature(jwt.RawHeader + "." + jwt.RawPayload, signingCredentials);
+               JwtTokenUtilities.CreateEncodedSignature(jwt.RawHeader + "." + jwt.RawPayload,
+                   jwtOptions.SigningCredentials);
     }
 }
