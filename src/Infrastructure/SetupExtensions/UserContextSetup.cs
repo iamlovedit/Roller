@@ -1,3 +1,5 @@
+using Roller.Infrastructure.HttpContextUser;
+
 namespace Roller.Infrastructure.SetupExtensions;
 
 public static class UserContextSetup

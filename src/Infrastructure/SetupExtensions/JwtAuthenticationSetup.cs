@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Primitives;
 using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions;

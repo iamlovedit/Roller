@@ -7,7 +7,6 @@ public static class TokenContextSetup
         ArgumentNullException.ThrowIfNull(services);
         services.TryAddSingleton<JwtSecurityTokenHandler>();
         services.TryAddSingleton<RollerTokenHandler>();
-        services.TryAddSingleton<ITokenBuilder, TokenBuilder>();
         return services;
     }
 }

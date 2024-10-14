@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Roller.Infrastructure.Filters;
-using Roller.Infrastructure.Repository;
 using Serilog;
 
 namespace Roller.Infrastructure.SetupExtensions;
@@ -20,6 +19,7 @@ public static class InfrastructureSetup
         services.AddAesEncryption();
         services.AddRollerTokenContext();
         services.AddRollerUserContext();
+        services.AddHttpContextAccessor();
         services.AddMapster();
         services.AddDatabaseSeedSetup();
 
