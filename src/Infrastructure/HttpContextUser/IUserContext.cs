@@ -14,7 +14,7 @@ public interface IUserContext<out TKey> where TKey : IEquatable<TKey>
 
     string RemoteIpAddress { get; }
 
-    JwtTokenInfo GenerateTokenInfo();
+    JwtTokenInfo GenerateTokenInfo(JwtSecurityToken jwtSecurityToken,double? duration, string schemeName);
 
     IList<Claim> GetClaimsFromUserContext();
 }

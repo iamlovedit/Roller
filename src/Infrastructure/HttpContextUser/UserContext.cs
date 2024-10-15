@@ -19,23 +19,27 @@ public class UserContext<TKey>(
 
     public string[] RoleIds => principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
 
-    public string RemoteIpAddress => httpContextAccessor.HttpContext.GetRequestIp()!;
+    public string RemoteIpAddress => httpContextAccessor.HttpContext?.GetRequestIp()!;
 
-    public JwtTokenInfo GenerateTokenInfo()
+    public JwtTokenInfo GenerateTokenInfo(
+        JwtSecurityToken? securityToken = null,
+        double? duration = null,
+        string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
         var claims = GetClaimsFromUserContext();
-        var jwtToken = new JwtSecurityToken(
+        securityToken ??= new JwtSecurityToken(
             issuer: jwtOptions.Issuer,
             audience: jwtOptions.Audience,
             claims: claims,
             notBefore: DateTime.Now,
             expires: DateTime.Now.Add(jwtOptions.Expiration),
             signingCredentials: jwtOptions.SigningCredentials);
-        var token = jwtSecurityTokenHandler.WriteToken(jwtToken);
+        var token = jwtSecurityTokenHandler.WriteToken(securityToken);
         token = aesEncryptionService.Encrypt(token);
-        return new JwtTokenInfo(token, jwtOptions.Expiration.TotalSeconds,
-            JwtBearerDefaults.AuthenticationScheme);
+        return new JwtTokenInfo(token, duration ?? jwtOptions.Expiration.TotalSeconds,
+            schemeName);
     }
+
 
     public IList<Claim> GetClaimsFromUserContext()
     {
