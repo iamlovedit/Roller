@@ -2,17 +2,17 @@ namespace Roller.Infrastructure.HttpContextUser;
 
 public interface IUserContext<TKey> where TKey : IEquatable<TKey>
 {
-    TKey Id { get; }
+    TKey? Id { get; set; }
 
-    string Username { get; }
+    string Username { get; set; }
 
-    string Name { get; }
+    string Name { get; set; }
 
-    string Email { get; }
+    string Email { get; set; }
 
-    string[] RoleIds { get; }
+    string[] RoleIds { get; set; }
 
-    string RemoteIpAddress { get; }
+    string RemoteIpAddress { get; set; }
 
     JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims, double? duration, string schemeName);
 

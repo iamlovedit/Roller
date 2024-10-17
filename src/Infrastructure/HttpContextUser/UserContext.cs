@@ -9,17 +9,54 @@ public class UserContext<TKey>(
     JwtSecurityTokenHandler jwtSecurityTokenHandler) : IUserContext<TKey> where TKey : IEquatable<TKey>
 {
     private readonly ClaimsPrincipal principal = httpContextAccessor?.HttpContext?.User;
-    public TKey Id => GetIdFromClaims();
 
-    public string Username => principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
+    private TKey? _id;
 
-    public string Name => principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+    private string? _username;
 
-    public string Email => principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+    private string? _name;
 
-    public string[] RoleIds => principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+    private string? _email;
 
-    public string RemoteIpAddress => httpContextAccessor.HttpContext?.GetRequestIp()!;
+    private string[]? _roleIds;
+
+    private string? _remoteIpAddress;
+
+    public TKey? Id
+    {
+        get => _id ??= GetIdFromClaims();
+        set => _id = value;
+    }
+
+    public string Username
+    {
+        get => _username ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
+        set => _username = value;
+    }
+
+    public string Name
+    {
+        get => _name ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+        set => _name = value;
+    }
+
+    public string Email
+    {
+        get => _email ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+        set => _email = value;
+    }
+
+    public string[] RoleIds
+    {
+        get => _roleIds ??= principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+        set => _roleIds = value;
+    }
+
+    public string RemoteIpAddress
+    {
+        get => _remoteIpAddress ??= httpContextAccessor.HttpContext?.GetRequestIp()!;
+        set => _remoteIpAddress = value;
+    }
 
     public JwtTokenInfo GenerateTokenInfo(
         IReadOnlyCollection<Claim> claims,
@@ -46,7 +83,7 @@ public class UserContext<TKey>(
         var claims = new List<Claim>()
         {
             new(JwtRegisteredClaimNames.UniqueName, userContext.Username),
-            new(JwtRegisteredClaimNames.NameId, userContext.Id.ToString()!),
+            new(JwtRegisteredClaimNames.NameId, userContext.Id?.ToString()),
             new(JwtRegisteredClaimNames.Name, userContext.Name),
             new(JwtRegisteredClaimNames.Email, userContext.Email),
             new(JwtRegisteredClaimNames.Iat,
