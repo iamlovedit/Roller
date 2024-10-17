@@ -22,12 +22,11 @@ public class UserContext<TKey>(
     public string RemoteIpAddress => httpContextAccessor.HttpContext?.GetRequestIp()!;
 
     public JwtTokenInfo GenerateTokenInfo(
-        JwtSecurityToken? securityToken = null,
+        IReadOnlyCollection<Claim> claims,
         double? duration = null,
         string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
-        var claims = GetClaimsFromUserContext();
-        securityToken ??= new JwtSecurityToken(
+        var securityToken = new JwtSecurityToken(
             issuer: jwtOptions.Issuer,
             audience: jwtOptions.Audience,
             claims: claims,
@@ -41,18 +40,19 @@ public class UserContext<TKey>(
     }
 
 
-    public IList<Claim> GetClaimsFromUserContext()
+    public IList<Claim> GetClaimsFromUserContext(IUserContext<TKey> userContext, TimeSpan? expiration)
     {
+        expiration ??= jwtOptions.Expiration;
         var claims = new List<Claim>()
         {
-            new(JwtRegisteredClaimNames.UniqueName, Username),
-            new(JwtRegisteredClaimNames.NameId, Id.ToString() ?? string.Empty),
-            new(JwtRegisteredClaimNames.Name, Name),
-            new(JwtRegisteredClaimNames.Email, Email),
+            new(JwtRegisteredClaimNames.UniqueName, userContext.Username),
+            new(JwtRegisteredClaimNames.NameId, userContext.Id.ToString()!),
+            new(JwtRegisteredClaimNames.Name, userContext.Name),
+            new(JwtRegisteredClaimNames.Email, userContext.Email),
             new(JwtRegisteredClaimNames.Iat,
                 EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer64),
-            new(JwtRegisteredClaimNames.Exp, jwtOptions.Expiration.ToString())
+            new(JwtRegisteredClaimNames.Exp, expiration.ToString()!)
         };
         claims.AddRange(RoleIds.Select(rId => new Claim(ClaimTypes.Role, rId)));
         return claims;

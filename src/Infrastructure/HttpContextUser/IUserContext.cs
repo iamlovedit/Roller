@@ -1,6 +1,6 @@
 namespace Roller.Infrastructure.HttpContextUser;
 
-public interface IUserContext<out TKey> where TKey : IEquatable<TKey>
+public interface IUserContext<TKey> where TKey : IEquatable<TKey>
 {
     TKey Id { get; }
 
@@ -14,7 +14,7 @@ public interface IUserContext<out TKey> where TKey : IEquatable<TKey>
 
     string RemoteIpAddress { get; }
 
-    JwtTokenInfo GenerateTokenInfo(JwtSecurityToken jwtSecurityToken,double? duration, string schemeName);
+    JwtTokenInfo GenerateTokenInfo(IReadOnlyCollection<Claim> claims, double? duration, string schemeName);
 
-    IList<Claim> GetClaimsFromUserContext();
+    IList<Claim> GetClaimsFromUserContext(IUserContext<TKey> userContext, TimeSpan? expiration);
 }
