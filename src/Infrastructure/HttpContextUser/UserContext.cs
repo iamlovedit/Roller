@@ -77,15 +77,15 @@ public class UserContext<TKey>(
     }
 
 
-    public IList<Claim> GetClaimsFromUserContext(IUserContext<TKey> userContext, TimeSpan? expiration)
+    public IList<Claim> GetClaimsFromUserContext(TimeSpan? expiration)
     {
         expiration ??= jwtOptions.Expiration;
         var claims = new List<Claim>()
         {
-            new(JwtRegisteredClaimNames.UniqueName, userContext.Username),
-            new(JwtRegisteredClaimNames.NameId, userContext.Id?.ToString()),
-            new(JwtRegisteredClaimNames.Name, userContext.Name),
-            new(JwtRegisteredClaimNames.Email, userContext.Email),
+            new(JwtRegisteredClaimNames.UniqueName, Username),
+            new(JwtRegisteredClaimNames.NameId, Id?.ToString()),
+            new(JwtRegisteredClaimNames.Name, Name),
+            new(JwtRegisteredClaimNames.Email, Email),
             new(JwtRegisteredClaimNames.Iat,
                 EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer64),
