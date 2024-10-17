@@ -63,6 +63,11 @@ public class UserContext<TKey>(
         double? duration = null,
         string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
+        if (double.NaN == duration)
+        {
+            duration = jwtOptions.Expiration.TotalSeconds;
+        }
+
         var securityToken = new JwtSecurityToken(
             issuer: jwtOptions.Issuer,
             audience: jwtOptions.Audience,
@@ -72,7 +77,7 @@ public class UserContext<TKey>(
             signingCredentials: jwtOptions.SigningCredentials);
         var token = jwtSecurityTokenHandler.WriteToken(securityToken);
         token = aesEncryptionService.Encrypt(token);
-        return new JwtTokenInfo(token, duration ?? jwtOptions.Expiration.TotalSeconds,
+        return new JwtTokenInfo(token, duration.Value,
             schemeName);
     }
 
