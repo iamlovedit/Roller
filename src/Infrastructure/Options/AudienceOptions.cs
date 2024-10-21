@@ -11,5 +11,5 @@ public class AudienceOptions : OptionsBase
     public string Secret { get; set; }
 
 
-    public int Expiration { get; set; }
+    public int Duration { get; set; }
 }

@@ -25,7 +25,7 @@ namespace Roller.Infrastructure.SetupExtensions
 
             services.AddSingleton(new JwtOptions(ClaimTypes.Role, audienceOptions.Issuer,
                 audienceOptions.Audience,
-                TimeSpan.FromSeconds(audienceOptions.Expiration), signingCredentials));
+                TimeSpan.FromSeconds(audienceOptions.Duration), signingCredentials));
             services.AddAuthorizationBuilder()
                 .AddPolicy(PermissionConstants.PolicyName,
                     policy => policy.RequireRole(
