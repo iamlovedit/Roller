@@ -39,7 +39,7 @@
     "Issuer": "test-issuer",
     "Audience": "test-audience",
     "Secret": "test-secret",
-    "Expiration": 3600
+    "Duration": 3600
   },
 ```
 
