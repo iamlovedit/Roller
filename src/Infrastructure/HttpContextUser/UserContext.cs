@@ -74,12 +74,12 @@ public class UserContext<TKey>(
 
     public JwtTokenInfo GenerateTokenInfo(
         IList<Claim>? claims = null,
-        double duration = 0,
+        int duration = 0,
         string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
         if (duration == 0)
         {
-            duration = jwtOptions.Expiration.TotalSeconds;
+            duration = (int)jwtOptions.Expiration.TotalSeconds;
         }
 
         claims ??= GetClaimsFromUserContext();
