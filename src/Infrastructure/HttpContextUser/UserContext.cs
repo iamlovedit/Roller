@@ -74,10 +74,10 @@ public class UserContext<TKey>(
 
     public JwtTokenInfo GenerateTokenInfo(
         IList<Claim>? claims = null,
-        double? duration = null,
+        double duration = 0,
         string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
-        if (double.NaN == duration)
+        if (duration == 0)
         {
             duration = jwtOptions.Expiration.TotalSeconds;
         }
@@ -89,14 +89,13 @@ public class UserContext<TKey>(
             Audience = jwtOptions.Audience,
             Claims = claims?.ToDictionary(c => c.Type, c => (object)c.Value),
             NotBefore = DateTime.Now,
-            Expires = DateTime.Now.AddSeconds(duration.Value),
+            Expires = DateTime.Now.AddSeconds(duration),
             SigningCredentials = jwtOptions.SigningCredentials,
         };
 
         var token = jsonWebTokenHandler.CreateToken(tokenDescriptor);
         token = aesEncryptionService.Encrypt(token);
-        return new JwtTokenInfo(token, duration.Value,
-            schemeName);
+        return new JwtTokenInfo(token, duration, schemeName);
     }
 
 

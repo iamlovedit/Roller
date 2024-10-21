@@ -20,7 +20,7 @@ public interface IUserContext<TKey> where TKey : IEquatable<TKey>
 
     JwtTokenInfo GenerateTokenInfo(
         IList<Claim> claims,
-        double? duration = double.NaN,
+        double duration = 0,
         string schemeName = JwtBearerDefaults.AuthenticationScheme);
 
     IList<Claim> GetClaimsFromUserContext(bool includePermissions = false);
