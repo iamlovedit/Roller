@@ -1,12 +1,10 @@
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
-
 namespace Roller.Infrastructure.HttpContextUser;
 
 public class UserContext<TKey>(
     IHttpContextAccessor httpContextAccessor,
     JwtOptions jwtOptions,
     IAesEncryptionService aesEncryptionService,
-    JwtSecurityTokenHandler jwtSecurityTokenHandler) : IUserContext<TKey> where TKey : IEquatable<TKey>
+    JsonWebTokenHandler jsonWebTokenHandler) : IUserContext<TKey> where TKey : IEquatable<TKey>
 {
     private readonly ClaimsPrincipal principal = httpContextAccessor?.HttpContext?.User;
 
@@ -22,6 +20,10 @@ public class UserContext<TKey>(
 
     private string? _remoteIpAddress;
 
+    private string[]? _permissions;
+
+    private string[]? _roleNames;
+
     public TKey? Id
     {
         get => _id ??= GetIdFromClaims();
@@ -30,26 +32,38 @@ public class UserContext<TKey>(
 
     public string Username
     {
-        get => _username ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.UniqueName).Value;
+        get => _username ??= GetClaimValue(JwtRegisteredClaimNames.UniqueName);
         set => _username = value;
     }
 
     public string Name
     {
-        get => _name ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+        get => _name ??= GetClaimValue(JwtRegisteredClaimNames.Name);
         set => _name = value;
     }
 
     public string Email
     {
-        get => _email ??= principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+        get => _email ??= GetClaimValue(JwtRegisteredClaimNames.Email);
         set => _email = value;
     }
 
     public string[] RoleIds
     {
-        get => _roleIds ??= principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+        get => _roleIds ??= GetClaimValues(ClaimConstants.RoleId);
         set => _roleIds = value;
+    }
+
+    public string[] Permissions
+    {
+        get => _permissions ??= GetClaimValues(ClaimConstants.PermissionCode);
+        set => _permissions = value;
+    }
+
+    public string[] RoleNames
+    {
+        get => _roleNames ??= GetClaimValues(ClaimTypes.Role);
+        set => _roleNames = value;
     }
 
     public string RemoteIpAddress
@@ -59,7 +73,7 @@ public class UserContext<TKey>(
     }
 
     public JwtTokenInfo GenerateTokenInfo(
-        IReadOnlyCollection<Claim> claims,
+        IList<Claim>? claims = null,
         double? duration = null,
         string schemeName = JwtBearerDefaults.AuthenticationScheme)
     {
@@ -68,35 +82,44 @@ public class UserContext<TKey>(
             duration = jwtOptions.Expiration.TotalSeconds;
         }
 
-        var securityToken = new JwtSecurityToken(
-            issuer: jwtOptions.Issuer,
-            audience: jwtOptions.Audience,
-            claims: claims,
-            notBefore: DateTime.Now,
-            expires: DateTime.Now.Add(jwtOptions.Expiration),
-            signingCredentials: jwtOptions.SigningCredentials);
-        var token = jwtSecurityTokenHandler.WriteToken(securityToken);
+        claims ??= GetClaimsFromUserContext();
+        var tokenDescriptor = new SecurityTokenDescriptor()
+        {
+            Issuer = jwtOptions.Issuer,
+            Audience = jwtOptions.Audience,
+            Claims = claims?.ToDictionary(c => c.Type, c => (object)c.Value),
+            NotBefore = DateTime.Now,
+            Expires = DateTime.Now.AddSeconds(duration.Value),
+            SigningCredentials = jwtOptions.SigningCredentials,
+        };
+
+        var token = jsonWebTokenHandler.CreateToken(tokenDescriptor);
         token = aesEncryptionService.Encrypt(token);
         return new JwtTokenInfo(token, duration.Value,
             schemeName);
     }
 
 
-    public IList<Claim> GetClaimsFromUserContext(TimeSpan? expiration)
+    public IList<Claim> GetClaimsFromUserContext(bool includePermissions = false)
     {
-        expiration ??= jwtOptions.Expiration;
         var claims = new List<Claim>()
         {
             new(JwtRegisteredClaimNames.UniqueName, Username),
-            new(JwtRegisteredClaimNames.NameId, Id?.ToString()),
+            new(JwtRegisteredClaimNames.NameId, Id?.ToString() ?? string.Empty),
             new(JwtRegisteredClaimNames.Name, Name),
             new(JwtRegisteredClaimNames.Email, Email),
             new(JwtRegisteredClaimNames.Iat,
                 EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer64),
-            new(JwtRegisteredClaimNames.Exp, expiration.ToString()!)
+            new(JwtRegisteredClaimNames.Exp, jwtOptions.Expiration.ToString())
         };
-        claims.AddRange(RoleIds.Select(rId => new Claim(ClaimTypes.Role, rId)));
+        claims.AddRange(RoleIds.Select(rId => new Claim(ClaimConstants.RoleId, rId)));
+        claims.AddRange(RoleNames.Select(rName => new Claim(ClaimTypes.Role, rName)));
+        if (includePermissions)
+        {
+            claims.AddRange(Permissions.Select(p => new Claim(ClaimConstants.PermissionCode, p)));
+        }
+
         return claims;
     }
 
@@ -104,5 +127,15 @@ public class UserContext<TKey>(
     {
         var idClaim = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId);
         return (TKey)Convert.ChangeType(idClaim.Value, typeof(TKey));
+    }
+
+    private string GetClaimValue(string claimType)
+    {
+        return principal.Claims.First(c => c.Type == claimType).Value;
+    }
+
+    private string[] GetClaimValues(string claimType)
+    {
+        return principal.Claims.Where(c => c.Type == claimType).Select(c => c.Value).ToArray();
     }
 }

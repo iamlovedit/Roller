@@ -12,12 +12,16 @@ public interface IUserContext<TKey> where TKey : IEquatable<TKey>
 
     string[] RoleIds { get; set; }
 
+    string[] Permissions { get; set; }
+
+    string[] RoleNames { get; set; }
+
     string RemoteIpAddress { get; set; }
 
     JwtTokenInfo GenerateTokenInfo(
-        IReadOnlyCollection<Claim> claims,
+        IList<Claim> claims,
         double? duration = double.NaN,
         string schemeName = JwtBearerDefaults.AuthenticationScheme);
 
-    IList<Claim> GetClaimsFromUserContext(TimeSpan? expiration = null);
+    IList<Claim> GetClaimsFromUserContext(bool includePermissions = false);
 }
