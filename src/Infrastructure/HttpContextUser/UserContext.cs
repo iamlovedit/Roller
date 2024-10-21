@@ -87,7 +87,7 @@ public class UserContext<TKey>(
         {
             Issuer = jwtOptions.Issuer,
             Audience = jwtOptions.Audience,
-            Claims = claims?.ToDictionary(c => c.Type, c => (object)c.Value),
+            Subject = new ClaimsIdentity(claims),
             NotBefore = DateTime.Now,
             Expires = DateTime.Now.AddSeconds(duration),
             SigningCredentials = jwtOptions.SigningCredentials,
