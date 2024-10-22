@@ -88,8 +88,8 @@ public class UserContext<TKey>(
             Issuer = jwtOptions.Issuer,
             Audience = jwtOptions.Audience,
             Subject = new ClaimsIdentity(claims),
-            NotBefore = DateTime.Now,
-            Expires = DateTime.Now.AddSeconds(duration),
+            NotBefore = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddSeconds(duration),
             SigningCredentials = jwtOptions.SigningCredentials,
         };
 
@@ -108,7 +108,7 @@ public class UserContext<TKey>(
             new(JwtRegisteredClaimNames.Name, Name),
             new(JwtRegisteredClaimNames.Email, Email),
             new(JwtRegisteredClaimNames.Iat,
-                EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture),
+                EpochTime.GetIntDate(DateTime.UtcNow).ToString("YY-MM-DD HH:mm:ss"),
                 ClaimValueTypes.Integer64),
             new(JwtRegisteredClaimNames.Exp, jwtOptions.Expiration.ToString())
         };
