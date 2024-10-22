@@ -122,8 +122,14 @@ public class UserContext<TKey>(
 
     private TKey GetIdFromClaims()
     {
+        if (_id is not null && !_id.Equals(default))
+        {
+            return _id;
+        }
+
         var idClaim = principal.Claims.First(c => c.Type == JwtRegisteredClaimNames.NameId);
-        return (TKey)Convert.ChangeType(idClaim.Value, typeof(TKey));
+        _id = (TKey)Convert.ChangeType(idClaim.Value, typeof(TKey));
+        return _id;
     }
 
     private string GetClaimValue(string claimType)
