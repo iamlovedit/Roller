@@ -4,7 +4,7 @@
         string claimType,
         string issuer,
         string audience,
-        TimeSpan expiration,
+        int duration,
         SigningCredentials credentials)
     {
         public string ClaimType { get; } = claimType;
@@ -13,7 +13,7 @@
 
         public string Audience { get; } = audience;
 
-        public TimeSpan Expiration { get; } = expiration;
+        public int Duration { get; } = duration;
 
         public SigningCredentials SigningCredentials { get; } = credentials;
     }

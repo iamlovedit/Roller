@@ -32,9 +32,12 @@ public static class JwtAuthenticationSetup
             ValidateAudience = true,
             ValidAudience = audienceOptions.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(300),
+            ClockSkew = TimeSpan.FromSeconds(0),
             RequireExpirationTime = true,
-            RoleClaimType = ClaimTypes.Role
+            RoleClaimType = ClaimTypes.Role,
+            LifetimeValidator = (before, expires, token, parameters) =>
+                before < DateTime.UtcNow - parameters.ClockSkew &&
+                DateTime.UtcNow < expires + parameters.ClockSkew
         };
 
         var builder = services.AddAuthentication(options =>

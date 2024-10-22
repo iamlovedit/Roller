@@ -24,8 +24,7 @@ namespace Roller.Infrastructure.SetupExtensions
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             services.AddSingleton(new JwtOptions(ClaimTypes.Role, audienceOptions.Issuer,
-                audienceOptions.Audience,
-                TimeSpan.FromSeconds(audienceOptions.Duration), signingCredentials));
+                audienceOptions.Audience, audienceOptions.Duration, signingCredentials));
             services.AddAuthorizationBuilder()
                 .AddPolicy(PermissionConstants.PolicyName,
                     policy => policy.RequireRole(

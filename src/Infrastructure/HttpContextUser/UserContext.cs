@@ -79,7 +79,7 @@ public class UserContext<TKey>(
     {
         if (duration == 0)
         {
-            duration = (int)jwtOptions.Expiration.TotalSeconds;
+            duration = jwtOptions.Duration;
         }
 
         claims ??= GetClaimsFromUserContext();
@@ -91,6 +91,7 @@ public class UserContext<TKey>(
             NotBefore = DateTime.UtcNow,
             Expires = DateTime.UtcNow.AddSeconds(duration),
             SigningCredentials = jwtOptions.SigningCredentials,
+            IssuedAt = DateTime.UtcNow
         };
 
         var token = jsonWebTokenHandler.CreateToken(tokenDescriptor);
@@ -98,19 +99,14 @@ public class UserContext<TKey>(
         return new JwtTokenInfo(token, duration, schemeName);
     }
 
-
     public IList<Claim> GetClaimsFromUserContext(bool includePermissions = false)
     {
-        var claims = new List<Claim>()
+        var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.UniqueName, Username),
             new(JwtRegisteredClaimNames.NameId, Id?.ToString() ?? string.Empty),
             new(JwtRegisteredClaimNames.Name, Name),
-            new(JwtRegisteredClaimNames.Email, Email),
-            new(JwtRegisteredClaimNames.Iat,
-                EpochTime.GetIntDate(DateTime.UtcNow).ToString("YY-MM-DD HH:mm:ss"),
-                ClaimValueTypes.Integer64),
-            new(JwtRegisteredClaimNames.Exp, jwtOptions.Expiration.ToString())
+            new(JwtRegisteredClaimNames.Email, Email)
         };
         claims.AddRange(RoleIds.Select(rId => new Claim(ClaimConstants.RoleId, rId)));
         claims.AddRange(RoleNames.Select(rName => new Claim(ClaimTypes.Role, rName)));
