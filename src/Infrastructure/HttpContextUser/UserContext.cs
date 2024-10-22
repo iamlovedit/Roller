@@ -6,7 +6,9 @@ public class UserContext<TKey>(
     IAesEncryptionService aesEncryptionService,
     JsonWebTokenHandler jsonWebTokenHandler) : IUserContext<TKey> where TKey : IEquatable<TKey>
 {
-    private readonly ClaimsPrincipal principal = httpContextAccessor?.HttpContext?.User;
+    private readonly ClaimsPrincipal principal = httpContextAccessor.HttpContext?.User ??
+                                                 throw new ArgumentNullException(
+                                                     nameof(httpContextAccessor.HttpContext), "HttpContext is null");
 
     private TKey? _id;
 
@@ -26,7 +28,7 @@ public class UserContext<TKey>(
 
     public TKey? Id
     {
-        get => _id ??= GetIdFromClaims();
+        get => GetIdFromClaims();
         set => _id = value;
     }
 
