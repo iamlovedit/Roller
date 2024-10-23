@@ -8,7 +8,7 @@ public class PageData<T>
     {
     }
 
-    public PageData(int pageIndex, int pageCount, int dataCount, int pageSize, List<T> data)
+    public PageData(int pageIndex, int pageCount, long dataCount, int pageSize, List<T> data)
     {
         Page = pageIndex;
         PageCount = pageCount;
@@ -21,7 +21,7 @@ public class PageData<T>
 
     public int PageCount { get; set; }
 
-    public int DataCount { get; set; }
+    public long DataCount { get; set; }
 
     public int PageSize { get; set; }
 
