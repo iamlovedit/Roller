@@ -20,8 +20,9 @@ public static class MongoDbSetup
             return services;
         }
 
-        services.TryAddScoped<IMongoDatabase>(_ =>
-            new MongoClient(mongoDbOptions.ConnectionString).GetDatabase(mongoDbOptions.Database));
+        services.TryAddSingleton<IMongoDatabase>(_ =>
+            new MongoClient(mongoDbOptions.ConnectionString)
+                .GetDatabase(mongoDbOptions.Database));
 
         services.TryAddScoped(typeof(IMongoRepositoryBase<,>), typeof(IMongoRepositoryBase<,>));
         return services;
