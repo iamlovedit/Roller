@@ -1,11 +1,14 @@
-﻿using Roller.Infrastructure.Options;
+﻿using Microsoft.AspNetCore.Authorization;
+using Roller.Infrastructure.Options;
 
 namespace Roller.Infrastructure.SetupExtensions
 {
     public static class AuthorizationSetup
     {
-        public static IServiceCollection AddAuthorizationSetup(this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddAuthorizationSetup(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            Action<AuthorizationBuilder>? configureAuthorizeBuilder = null)
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -25,12 +28,13 @@ namespace Roller.Infrastructure.SetupExtensions
 
             services.AddSingleton(new JwtOptions(ClaimTypes.Role, audienceOptions.Issuer,
                 audienceOptions.Audience, audienceOptions.Duration, signingCredentials));
-            services.AddAuthorizationBuilder()
-                .AddPolicy(PermissionConstants.PolicyName,
-                    policy => policy.RequireRole(
-                            PermissionConstants.Consumer, PermissionConstants.Administrator,
-                            PermissionConstants.SuperAdministrator)
-                        .Build());
+            var builder = services.AddAuthorizationBuilder();
+            builder.AddPolicy(PermissionConstants.PolicyName,
+                policy => policy.RequireRole(
+                        PermissionConstants.Consumer, PermissionConstants.Administrator,
+                        PermissionConstants.SuperAdministrator)
+                    .Build());
+            configureAuthorizeBuilder?.Invoke(builder);
             return services;
         }
     }

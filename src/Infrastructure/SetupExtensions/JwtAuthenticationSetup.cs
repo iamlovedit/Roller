@@ -5,8 +5,12 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class JwtAuthenticationSetup
 {
-    public static IServiceCollection AddJwtAuthenticationSetup(this IServiceCollection services,
-        IConfiguration configuration, Action<AuthenticationBuilder>? builderAction = null)
+    public static IServiceCollection AddJwtAuthenticationSetup(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        Action<AuthenticationBuilder>? builderAction = null,
+        Action<AuthenticationOptions>? configureAuthenticationOptions = null,
+        Action<JwtBearerOptions>? configureJwtBearerOptions = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -45,9 +49,14 @@ public static class JwtAuthenticationSetup
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = nameof(RollerAuthenticationHandler);
                 options.DefaultForbidScheme = nameof(RollerAuthenticationHandler);
+                configureAuthenticationOptions?.Invoke(options);
             }).AddScheme<AuthenticationSchemeOptions, RollerAuthenticationHandler>(nameof(RollerAuthenticationHandler),
                 options => { })
-            .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = tokenValidationParameters;
+                configureJwtBearerOptions?.Invoke(options);
+            });
         builderAction?.Invoke(builder);
 
         return services;
