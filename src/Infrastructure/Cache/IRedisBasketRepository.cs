@@ -7,7 +7,7 @@ public interface IRedisBasketRepository
 
     Task<string> GetValue(string key);
 
-    Task<T> Get<T>(string key);
+    Task<T?> Get<T>(string key);
 
     Task<List<T>> GetValues<T>(string[] keys) where T : class;
 
@@ -29,7 +29,7 @@ public interface IRedisBasketRepository
 
     Task<long> ListRightPushAsync(string redisKey, IEnumerable<string> redisValue, int db = -1);
 
-    Task<T> ListLeftPopAsync<T>(string redisKey, int db = -1) where T : class;
+    Task<T?> ListLeftPopAsync<T>(string redisKey, int db = -1) where T : class;
 
     Task<T> ListRightPopAsync<T>(string redisKey, int db = -1) where T : class;
 

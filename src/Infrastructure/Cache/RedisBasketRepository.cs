@@ -44,7 +44,7 @@ public class RedisBasketRepository(
         await _database.KeyDeleteAsync(key);
     }
 
-    public async Task Set(string key, object value, TimeSpan cacheTime)
+    public async Task Set(string key, object? value, TimeSpan cacheTime)
     {
         if (value != null)
         {
@@ -54,7 +54,7 @@ public class RedisBasketRepository(
             }
             else
             {
-                var jsonString = JsonConvert.SerializeObject(value);
+                var jsonString = value.Serialize();
                 var buffer = Encoding.UTF8.GetBytes(jsonString);
                 await _database.StringSetAsync(key, buffer, cacheTime);
             }
@@ -72,7 +72,7 @@ public class RedisBasketRepository(
             }
             else
             {
-                var jsonString = JsonConvert.SerializeObject(pair.Value);
+                var jsonString = pair.Value.Serialize();
                 var buffer = Encoding.UTF8.GetBytes(jsonString);
                 await _database.StringSetAsync(pair.Key, buffer, cacheTime);
             }
@@ -81,13 +81,13 @@ public class RedisBasketRepository(
         return await transaction.ExecuteAsync();
     }
 
-    public async Task<TEntity> Get<TEntity>(string key)
+    public async Task<TEntity?> Get<TEntity>(string key)
     {
         var value = await _database.StringGetAsync(key);
         if (value.HasValue)
         {
             var jsonString = Encoding.UTF8.GetString(value);
-            return JsonConvert.DeserializeObject<TEntity>(jsonString);
+            return jsonString.Deserialize<TEntity>();
         }
         else
         {
@@ -99,16 +99,7 @@ public class RedisBasketRepository(
     {
         var redisKeys = keys.Select(k => new RedisKey(k)).ToArray();
         var redisValues = await _database.StringGetAsync(redisKeys);
-        var result = new List<T>();
-        foreach (var value in redisValues)
-        {
-            if (value.HasValue)
-            {
-                result.Add(JsonConvert.DeserializeObject<T>(value));
-            }
-        }
-
-        return result;
+        return (from value in redisValues where value.HasValue select JsonConvert.DeserializeObject<T>(value)).ToList();
     }
 
     public async Task<RedisValue[]> ListRangeAsync(string redisKey)
@@ -128,11 +119,11 @@ public class RedisBasketRepository(
 
     public async Task<long> ListRightPushAsync(string redisKey, IEnumerable<string> redisValue, int db = -1)
     {
-        var redislist = redisValue.Select(r => (RedisValue)r).ToArray();
-        return await _database.ListRightPushAsync(redisKey, redislist);
+        var values = redisValue.Select(r => (RedisValue)r).ToArray();
+        return await _database.ListRightPushAsync(redisKey, values);
     }
 
-    public async Task<T> ListLeftPopAsync<T>(string redisKey, int db = -1) where T : class
+    public async Task<T?> ListLeftPopAsync<T>(string redisKey, int db = -1) where T : class
     {
         return JsonConvert.DeserializeObject<T>(await _database.ListLeftPopAsync(redisKey));
     }
