@@ -24,7 +24,7 @@ public static class SqlSugarSetup
             return services;
         }
 
-        services.TryAddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+        services.TryAddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
         services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         if (sqlSugarOptions.SnowFlake?.Enable ?? false)
         {

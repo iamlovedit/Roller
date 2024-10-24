@@ -3,11 +3,12 @@ using SqlSugar;
 
 namespace Roller.Infrastructure.Repository
 {
-    public abstract class ServiceBase<T>(IRepositoryBase<T> dbContext) : IServiceBase<T> where T : class, new()
+    public abstract class ServiceBase<T, TId>(IRepositoryBase<T, TId> dbContext)
+        : IServiceBase<T, TId> where T : class, new() where TId : IEquatable<TId>
     {
-        public IRepositoryBase<T> DAL { get; } = dbContext;
+        public IRepositoryBase<T, TId> DAL { get; } = dbContext;
 
-        public async Task<T> GetByIdAsync(long id)
+        public async Task<T> GetByIdAsync(TId id)
         {
             return await DAL.GetByIdAsync(id);
         }
@@ -15,6 +16,11 @@ namespace Roller.Infrastructure.Repository
         public async Task<long> AddSnowflakeAsync(T entity)
         {
             return await DAL.AddSnowflakeAsync(entity);
+        }
+
+        public async Task<T> AddEntityAsync(T entity)
+        {
+            return await DAL.AddEntityAsync(entity);
         }
 
         public async Task<IList<long>> AddSnowflakesAsync(IList<T> entities)

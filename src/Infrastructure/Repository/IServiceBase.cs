@@ -3,11 +3,11 @@ using SqlSugar;
 
 namespace Roller.Infrastructure.Repository;
 
-public interface IServiceBase<T> where T : class, new()
+public interface IServiceBase<T,TId> where T : class, new() where TId : IEquatable<TId>
 {
-    IRepositoryBase<T> DAL { get; }
+    IRepositoryBase<T,TId> DAL { get; }
 
-    Task<T> GetByIdAsync(long id);
+    Task<T> GetByIdAsync(TId id);
 
     Task<List<T>> GetAllAsync();
 
@@ -15,6 +15,8 @@ public interface IServiceBase<T> where T : class, new()
 
     Task<long> AddSnowflakeAsync(T entity);
 
+    Task<T> AddEntityAsync(T entity);
+    
     Task<IList<long>> AddSnowflakesAsync(IList<T> entities);
 
     Task<PageData<T>> QueryPageAsync(Expression<Func<T, bool>>? whereExpression, int pageIndex = 1, int pageSize = 20,
