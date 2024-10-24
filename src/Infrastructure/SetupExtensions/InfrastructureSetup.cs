@@ -40,6 +40,8 @@ public static class InfrastructureSetup
 
         services.AddRedisCacheSetup(configuration);
 
+        services.AddMongoDbSetup(configuration);
+
         services.AddSerilogSetup(configuration);
 
         services.AddJwtAuthenticationSetup(configuration);

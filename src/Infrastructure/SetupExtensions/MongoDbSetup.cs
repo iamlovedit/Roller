@@ -24,7 +24,7 @@ public static class MongoDbSetup
             new MongoClient(mongoDbOptions.ConnectionString)
                 .GetDatabase(mongoDbOptions.Database));
 
-        services.TryAddScoped(typeof(IMongoRepositoryBase<,>), typeof(IMongoRepositoryBase<,>));
+        services.TryAddScoped(typeof(IMongoRepositoryBase<,>), typeof(MongoRepositoryBase<,>));
         return services;
     }
 }
