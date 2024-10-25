@@ -1,10 +1,5 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using Roller.Infrastructure.Filters;
 using Serilog;
 
 namespace Roller.Infrastructure.SetupExtensions;
@@ -50,36 +45,12 @@ public static class InfrastructureSetup
 
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen(options =>
-        {
-            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()
-            {
-                In = ParameterLocation.Header,
-                Description = "Please enter a valid token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = JwtBearerDefaults.AuthenticationScheme
-            });
-        });
+        services.AddRollerSwaggerGen();
+
         services.AddApiVersionSetup(configuration);
 
-        services.AddControllers(options =>
-            {
-                options.Filters.Add<GlobalExceptionsFilter>();
-                options.Filters.Add<IdempotencyFilter>();
-            })
-            .AddNewtonsoftJson(
-                options =>
-                {
-                    options.SerializerSettings.Formatting = Formatting.Indented;
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                });
+        services.AddRollerControllers();
+
         builder.Host.UseSerilog(Log.Logger, true);
         return builder;
     }
