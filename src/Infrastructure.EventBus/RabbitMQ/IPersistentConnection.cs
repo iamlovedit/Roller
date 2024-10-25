@@ -1,6 +1,6 @@
 namespace Roller.Infrastructure.EventBus.RabbitMQ;
 
-public interface IPersistentConnection : IDisposable
+public interface IPersistentConnection
 {
     event EventHandler OnReconnectedAfterConnectionFailure;
     bool IsConnected { get; }

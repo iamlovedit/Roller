@@ -26,7 +26,7 @@ public class RabbitMQPersistentConnection(
 
         lock (_locker)
         {
-            // Creates a policy to retry connecting to message broker until it succeeds.
+            // Creates a policy to retry connecting to message broker until it succeds.
             var policy = Policy
                 .Handle<SocketException>()
                 .Or<BrokerUnreachableException>()
@@ -47,7 +47,7 @@ public class RabbitMQPersistentConnection(
                 return false;
             }
 
-            // These event handlers hadle situations where the connection is lost by any reason. They try to reconnect the client.
+            // These event handlers hanle situations where the connection is lost by any reason. They try to reconnect the client.
             _connection.ConnectionShutdown += OnConnectionShutdown;
             _connection.CallbackException += OnCallbackException;
             _connection.ConnectionBlocked += OnConnectionBlocked;
@@ -59,13 +59,12 @@ public class RabbitMQPersistentConnection(
 
             // If the connection has failed previously because of a RabbitMQ shutdown or something similar, we need to guarantee that the exchange and queues exist again.
             // It's also necessary to rebind all application event handlers. We use this event handler below to do this.
-            if (!_connectionFailed)
+            if (_connectionFailed)
             {
-                return true;
+                OnReconnectedAfterConnectionFailure?.Invoke(this, null);
+                _connectionFailed = false;
             }
 
-            OnReconnectedAfterConnectionFailure?.Invoke(this, null);
-            _connectionFailed = false;
             return true;
         }
     }
@@ -74,7 +73,7 @@ public class RabbitMQPersistentConnection(
     {
         if (!IsConnected)
         {
-            throw new InvalidOperationException("No RabbitMQ connections are available to perform this action");
+            throw new InvalidOperationException("No RabbitMQ connections are available to perform this action.");
         }
 
         return _connection.CreateModel();

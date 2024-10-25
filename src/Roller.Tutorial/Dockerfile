@@ -1,5 +1,4 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 80
 
@@ -8,6 +7,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Roller.Tutorial/Roller.Tutorial.csproj", "Roller.Tutorial/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Infrastructure.EventBus/Infrastructure.EventBus.csproj", "Infrastructure.EventBus/"]
 RUN dotnet restore "Roller.Tutorial/Roller.Tutorial.csproj"
 COPY . .
 WORKDIR "/src/Roller.Tutorial"

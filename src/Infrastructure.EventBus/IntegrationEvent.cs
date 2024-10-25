@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Roller.Infrastructure.EventBus;
 
 [method: JsonConstructor]

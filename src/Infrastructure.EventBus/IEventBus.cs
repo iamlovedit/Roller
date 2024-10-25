@@ -2,9 +2,11 @@
 
 public interface IEventBus
 {
-    void Publish(IntegrationEvent integrationEvent);
+    void Publish<TEvent>(TEvent integrationEvent) where TEvent : IntegrationEvent;
 
-    void Subscribe<TEvent, TEventHandler>() where TEvent : IntegrationEvent where TEventHandler : IIntegrationEventHandler<TEvent>;
+    void Subscribe<TEvent, TEventHandler>() where TEvent : IntegrationEvent
+        where TEventHandler : IIntegrationEventHandler<TEvent>;
 
-    void Unsubscribe<TEvent, TEventHandler>() where TEventHandler : IIntegrationEventHandler<TEvent> where TEvent : IntegrationEvent;
+    void Unsubscribe<TEvent, TEventHandler>() where TEventHandler : IIntegrationEventHandler<TEvent>
+        where TEvent : IntegrationEvent;
 }
