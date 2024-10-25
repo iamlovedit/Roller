@@ -1,7 +1,6 @@
 ﻿services:
   roller_tutorial:
     image: roller_tutorial
-    container_name: "roller_tutorial"
     env_file:
       - .env
     build:
@@ -15,9 +14,26 @@
       - redis
     ports:
       - "5200:${ASPNETCORE_HTTP_PORTS}"
-    
+
+  rabbitmq:
+    restart: always
+    image: rabbitmq:management
+    networks:
+      - "tutorial_net"    
+    env_file:
+      - .env
+    hostname: rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      TZ: Asia/Shanghai
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - ./docker/rabbitmq/data:/var/lib/rabbitmq
+      
   postgresql:
-    container_name: "roller_postgresql"
     image: "postgres"
     restart: unless-stopped
     ports:
@@ -37,7 +53,6 @@
     networks:
       - "tutorial_net"
     restart: unless-stopped
-    container_name: "roller_redis"
     image: "redis"
     ports:
       - "${REDIS_PORT}:6379"
@@ -47,7 +62,6 @@
     env_file:
       - .env
     image: datalust/seq:latest
-    container_name: "roller_seq"
     restart: unless-stopped
     environment:
       - ACCEPT_EULA = Y
