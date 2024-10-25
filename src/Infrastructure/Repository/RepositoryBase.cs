@@ -9,7 +9,7 @@ public class RepositoryBase<T, TId>(ISqlSugarClient context)
 {
     public ISqlSugarClient DbContext => context;
 
-    public async Task<T> GetByIdAsync(TId id)
+    public async Task<T?> GetByIdAsync(TId id)
     {
         return await context.Queryable<T>().InSingleAsync(id);
     }
@@ -24,12 +24,12 @@ public class RepositoryBase<T, TId>(ISqlSugarClient context)
         return await context.Insertable<T>(entities).ExecuteReturnSnowflakeIdListAsync();
     }
 
-    public async Task<T> AddEntityAsync(T entity)
+    public async Task<T?> AddEntityAsync(T entity)
     {
         return await context.Insertable(entity).ExecuteReturnEntityAsync();
     }
 
-    public async Task<PageData<T>> QueryPageAsync(Expression<Func<T, bool>>? whereExpression, int pageIndex = 1,
+    public async Task<PageData<T>?> QueryPageAsync(Expression<Func<T, bool>>? whereExpression, int pageIndex = 1,
         int pageSize = 20,
         Expression<Func<T, object>>? orderExpression = null, OrderByType orderByType = OrderByType.Asc)
     {
@@ -42,14 +42,14 @@ public class RepositoryBase<T, TId>(ISqlSugarClient context)
         return new PageData<T>(pageIndex, pageCount, totalCount, pageSize, list);
     }
 
-    public async Task<List<T>> GetAllAsync()
+    public async Task<List<T>?> GetAllAsync()
     {
         return await context.Queryable<T>().ToListAsync();
     }
 
-    public async Task<T> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
+    public async Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
     {
-        return await context.Queryable<T>().Where(expression).FirstAsync();
+        return await context.Queryable<T>().FirstAsync(expression);
     }
 
     public async Task<bool> UpdateColumnsAsync(T entity, Expression<Func<T, object>> expression)

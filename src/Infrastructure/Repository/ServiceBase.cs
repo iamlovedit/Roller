@@ -8,7 +8,7 @@ namespace Roller.Infrastructure.Repository
     {
         public IRepositoryBase<T, TId> DAL { get; } = dbContext;
 
-        public async Task<T> GetByIdAsync(TId id)
+        public async Task<T?> GetByIdAsync(TId id)
         {
             return await DAL.GetByIdAsync(id);
         }
@@ -18,7 +18,7 @@ namespace Roller.Infrastructure.Repository
             return await DAL.AddSnowflakeAsync(entity);
         }
 
-        public async Task<T> AddEntityAsync(T entity)
+        public async Task<T?> AddEntityAsync(T entity)
         {
             return await DAL.AddEntityAsync(entity);
         }
@@ -28,19 +28,19 @@ namespace Roller.Infrastructure.Repository
             return await DAL.AddSnowflakesAsync(entities);
         }
 
-        public async Task<PageData<T>> QueryPageAsync(Expression<Func<T, bool>>? whereExpression, int pageIndex = 1,
+        public async Task<PageData<T>?> QueryPageAsync(Expression<Func<T, bool>>? whereExpression, int pageIndex = 1,
             int pageSize = 20,
             Expression<Func<T, object>>? orderExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
             return await DAL.QueryPageAsync(whereExpression, pageIndex, pageSize, orderExpression, orderByType);
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async Task<List<T>?> GetAllAsync()
         {
             return await DAL.GetAllAsync();
         }
 
-        public async Task<T> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
+        public async Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
         {
             return await DAL.GetFirstByExpressionAsync(expression);
         }
