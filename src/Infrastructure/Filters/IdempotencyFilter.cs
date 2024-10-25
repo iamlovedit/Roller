@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Roller.Infrastructure.Repository.Redis;
 
 namespace Roller.Infrastructure.Filters;
 

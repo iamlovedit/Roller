@@ -1,4 +1,5 @@
 ﻿using Roller.Infrastructure.Options;
+using Roller.Infrastructure.Repository.Redis;
 using StackExchange.Redis;
 
 namespace Roller.Infrastructure.SetupExtensions;

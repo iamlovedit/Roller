@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Roller.Infrastructure.Repository.Redis;
 using StackExchange.Redis;
 
 namespace Roller.Infrastructure.Cache;
