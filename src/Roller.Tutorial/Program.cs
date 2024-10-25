@@ -10,6 +10,5 @@ builder.Services.AddTransient<MessageSentEventHandler>();
 var app = builder
     .AddInfrastructureSetup()
     .Build();
-var eventBus = app.Services.GetRequiredService<IEventBus>();
-eventBus.Subscribe<MessageSentEvent, MessageSentEventHandler>();
+app.Services.SubscribeEvent<MessageSentEvent, MessageSentEventHandler>();
 app.UseInfrastructure();

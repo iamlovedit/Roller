@@ -45,15 +45,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static WebApplication SubscribeEvent<TEvent, TEvenHandler>
-        (this WebApplication app, IServiceCollection services)
+    public static void SubscribeEvent<TEvent, TEvenHandler>
+        (this  IServiceProvider  services)
         where TEvent : IntegrationEvent
         where TEvenHandler : IIntegrationEventHandler<TEvent>
     {
         ArgumentNullException.ThrowIfNull(services);
-        services.AddTransient(typeof(TEvenHandler));
-        var eventBus = app.Services.GetRequiredService<IEventBus>();
+        var eventBus = services.GetRequiredService<IEventBus>();
         eventBus.Subscribe<TEvent, TEvenHandler>();
-        return app;
     }
 }
