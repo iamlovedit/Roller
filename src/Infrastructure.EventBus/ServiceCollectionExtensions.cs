@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Roller.Infrastructure.EventBus.RabbitMQ;
 using Roller.Infrastructure.EventBus.Subscriptions;
 
@@ -41,5 +43,17 @@ public static class ServiceCollectionExtensions
                 rabbitMqOptions.ExchangeName, rabbitMqOptions.QueueName);
         });
         return services;
+    }
+
+    public static WebApplication SubscribeEvent<TEvent, TEvenHandler>
+        (this WebApplication app, IServiceCollection services)
+        where TEvent : IntegrationEvent
+        where TEvenHandler : IIntegrationEventHandler<TEvent>
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        services.AddTransient(typeof(TEvenHandler));
+        var eventBus = app.Services.GetRequiredService<IEventBus>();
+        eventBus.Subscribe<TEvent, TEvenHandler>();
+        return app;
     }
 }
