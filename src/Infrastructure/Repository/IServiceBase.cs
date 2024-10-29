@@ -24,6 +24,8 @@ public interface IServiceBase<T,TId> where T : class, new() where TId : IEquatab
 
     Task<bool> UpdateColumnsAsync(T entity, Expression<Func<T, object>> expression);
     
+    Task<bool> UpdateAsync(T entity);
+    
     Task<bool> DeleteByIdAsync(long id);
 
     Task<bool> DeleteAsync(T entity);

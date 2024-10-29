@@ -24,6 +24,8 @@ public interface IRepositoryBase<T, in TId> where T : class, new() where TId : I
 
     Task<bool> UpdateColumnsAsync(T entity, Expression<Func<T, object>> expression);
 
+    Task<bool> UpdateAsync(T entity);
+
     Task<bool> DeleteByIdAsync(long id);
 
     Task<bool> DeleteAsync(T entity);

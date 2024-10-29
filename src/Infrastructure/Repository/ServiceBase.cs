@@ -50,6 +50,11 @@ namespace Roller.Infrastructure.Repository
             return await DAL.UpdateColumnsAsync(entity, expression);
         }
 
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            return await DAL.UpdateAsync(entity);
+        }
+
         public async Task<bool> DeleteByIdAsync(long id)
         {
             return await DAL.DeleteByIdAsync(id);

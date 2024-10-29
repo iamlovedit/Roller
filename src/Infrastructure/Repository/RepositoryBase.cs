@@ -57,6 +57,11 @@ public class RepositoryBase<T, TId>(ISqlSugarClient context)
         return await context.Updateable(entity).UpdateColumns(expression).ExecuteCommandHasChangeAsync();
     }
 
+    public async Task<bool> UpdateAsync(T entity)
+    {
+        return await context.Updateable<T>(entity).ExecuteCommandHasChangeAsync();
+    }
+
     public async Task<bool> DeleteByIdAsync(long id)
     {
         return await context.Deleteable<T>().In(id).ExecuteCommandHasChangeAsync();
