@@ -21,7 +21,7 @@ public class RabbitMQEventBus : IEventBus
 
     private readonly ILogger<RabbitMQEventBus> _logger;
 
-    private IModel _consumerChannel;
+    private IModel? _consumerChannel;
 
     public RabbitMQEventBus(
         IPersistentConnection persistentConnection,
@@ -68,7 +68,7 @@ public class RabbitMQEventBus : IEventBus
         using var channel = _persistentConnection.CreateModel();
         _logger.LogTrace("Declaring RabbitMQ exchange to publish event #{EventId}...", @event.Id);
 
-        channel.ExchangeDeclare(exchange: _exchangeName, type: "direct");
+        channel.ExchangeDeclare(_exchangeName, ExchangeType.Direct);
 
         var message = JsonSerializer.Serialize(@event);
         var body = Encoding.UTF8.GetBytes(message);
@@ -80,13 +80,7 @@ public class RabbitMQEventBus : IEventBus
 
             _logger.LogTrace("Publishing event to RabbitMQ with ID #{EventId}...", @event.Id);
 
-            channel.BasicPublish(
-                exchange: _exchangeName,
-                routingKey: eventName,
-                mandatory: true,
-                basicProperties: properties,
-                body: body);
-
+            channel.BasicPublish(_exchangeName, eventName, true, properties, body);
             _logger.LogTrace("Published event with ID #{EventId}.", @event.Id);
         });
     }
@@ -140,15 +134,8 @@ public class RabbitMQEventBus : IEventBus
 
         var channel = _persistentConnection.CreateModel();
 
-        channel.ExchangeDeclare(exchange: _exchangeName, type: "direct");
-        channel.QueueDeclare
-        (
-            queue: _queueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null
-        );
+        channel.ExchangeDeclare(_exchangeName, ExchangeType.Direct);
+        channel.QueueDeclare(_queueName, true, false, false, null);
 
         channel.CallbackException += (sender, ea) =>
         {
@@ -175,12 +162,7 @@ public class RabbitMQEventBus : IEventBus
         var consumer = new AsyncEventingBasicConsumer(_consumerChannel);
         consumer.Received += Consumer_Received;
 
-        _consumerChannel.BasicConsume
-        (
-            queue: _queueName,
-            autoAck: false,
-            consumer: consumer
-        );
+        _consumerChannel.BasicConsume(_queueName, false, consumer);
 
         _logger.LogTrace("Started RabbitMQ basic consume.");
     }
@@ -270,7 +252,7 @@ public class RabbitMQEventBus : IEventBus
         }
 
         using var channel = _persistentConnection.CreateModel();
-        channel.QueueUnbind(queue: _queueName, exchange: _exchangeName, routingKey: eventName);
+        channel.QueueUnbind(_queueName, _exchangeName, eventName);
 
         if (_subscriptionsManager.IsEmpty)
         {
@@ -292,7 +274,7 @@ public class RabbitMQEventBus : IEventBus
         }
 
         using var channel = _persistentConnection.CreateModel();
-        channel.QueueBind(queue: _queueName, exchange: _exchangeName, routingKey: eventName);
+        channel.QueueBind(_queueName, _exchangeName, eventName);
     }
 
     private void PersistentConnection_OnReconnectedAfterConnectionFailure(object sender, EventArgs e)
