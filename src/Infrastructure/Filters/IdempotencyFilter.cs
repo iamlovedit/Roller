@@ -30,7 +30,7 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
             var hashBytes = MD5.HashData(Encoding.ASCII.GetBytes(body));
             var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
-            var redisKey = $"{request.Path.Value}:{hashString}";
+            var redisKey = $"{request.Path.Value}:{request.Method}:{hashString}";
 
             if (await redis.Exist(redisKey))
             {
