@@ -70,6 +70,9 @@
       - "5341:80"
     networks:
       - "tutorial_net"
+    volumes:
+      - ./docker/seq/data:/data
+ 
   seqcli:
     env_file:
       - .env
