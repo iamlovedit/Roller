@@ -9,8 +9,13 @@ namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SqlSugarSetup
 {
-    public static IServiceCollection AddSqlSugarSetup(this IServiceCollection services, IConfiguration configuration,
-        IWebHostEnvironment hostEnvironment)
+    public static IServiceCollection AddSqlSugarSetup(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment hostEnvironment,
+        List<ConnectionConfig>? connectionConfigs = null,
+        Action<object, DataFilterModel>? onDataChanging = null,
+        Action<DiffLogModel>? onDiffLogEvent = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -50,7 +55,8 @@ public static class SqlSugarSetup
 
         var connectionString = $"server={server};port={port};database={database};userid={userId};password={password};";
 
-        var connectionConfig = new ConnectionConfig()
+        connectionConfigs ??= [];
+        connectionConfigs.Add(new ConnectionConfig()
         {
             DbType = DbType.PostgreSQL,
             ConnectionString = connectionString,
@@ -60,16 +66,36 @@ public static class SqlSugarSetup
             {
                 PgSqlIsAutoToLower = false,
                 PgSqlIsAutoToLowerCodeFirst = false,
-            }
-        };
+            },
+            ConfigureExternalServices = new ConfigureExternalServices()
+            {
+                EntityService = (p, c) =>
+                {
+                    if (c.IsPrimarykey == false &&
+                        new NullabilityInfoContext().Create(p).WriteState is NullabilityState.Nullable)
+                    {
+                        c.IsNullable = true;
+                    }
 
-        var sugarScope = new SqlSugarScope(connectionConfig, config =>
+                    c.DbColumnName = UtilMethods.ToUnderLine(c.DbColumnName);
+                },
+                EntityNameService = (t, e) => { e.DbTableName = UtilMethods.ToUnderLine(e.DbTableName); }
+            }
+        });
+        var sugarScope = new SqlSugarScope(connectionConfigs, client =>
         {
-            config.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
+            client.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
             if (hostEnvironment.IsDevelopment() || hostEnvironment.IsStaging())
             {
-                config.Aop.OnLogExecuting = (sql, parameters) => { Log.Logger.Information(sql); };
+                client.Aop.OnLogExecuted = (sql, parameters) =>
+                {
+                    var elapsed = client.Ado.SqlExecutionTime.TotalSeconds;
+                    Log.Logger.Information("sql: {sql}  elapsed: {time} seconds", sql, elapsed);
+                };
             }
+
+            client.Aop.DataExecuting = onDataChanging;
+            client.Aop.OnDiffLogEvent = onDiffLogEvent;
         });
         services.AddSingleton<ISqlSugarClient>(sugarScope);
         return services;
