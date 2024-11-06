@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Roller.Infrastructure.Domain;
 using Roller.Infrastructure.Options;
 using Roller.Infrastructure.Repository;
 using Serilog;
@@ -14,7 +15,7 @@ public static class SqlSugarSetup
         IConfiguration configuration,
         IWebHostEnvironment hostEnvironment,
         List<ConnectionConfig>? connectionConfigs = null,
-        Action<object, DataFilterModel>? onDataChanging = null,
+        Action<object, DataFilterModel>? onDataExecuting = null,
         Action<DiffLogModel>? onDiffLogEvent = null)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -84,7 +85,7 @@ public static class SqlSugarSetup
         });
         var sugarScope = new SqlSugarScope(connectionConfigs, client =>
         {
-            client.QueryFilter.AddTableFilter<IDeletable>(d => !d.IsDeleted);
+            client.QueryFilter.AddTableFilter<IDeletable>(d => d.IsDeleted == false);
             if (hostEnvironment.IsDevelopment() || hostEnvironment.IsStaging())
             {
                 client.Aop.OnLogExecuted = (sql, parameters) =>
@@ -94,7 +95,23 @@ public static class SqlSugarSetup
                 };
             }
 
-            client.Aop.DataExecuting = onDataChanging;
+            onDataExecuting ??= (o, entityInfo) =>
+            {
+                if (entityInfo is
+                    {
+                        OperationType: DataFilterType.InsertByObject, PropertyName: nameof(IDateAbility.CreatedDate)
+                    })
+                {
+                    entityInfo.SetValue(DateTime.Now);
+                }
+
+                if (entityInfo is
+                    { OperationType: DataFilterType.UpdateByObject, PropertyName: nameof(IDateAbility.UpdatedDate) })
+                {
+                    entityInfo.SetValue(DateTime.Now);
+                }
+            };
+            client.Aop.DataExecuting = onDataExecuting;
             client.Aop.OnDiffLogEvent = onDiffLogEvent;
         });
         services.AddSingleton<ISqlSugarClient>(sugarScope);

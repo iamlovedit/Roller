@@ -1,4 +1,4 @@
-﻿namespace Roller.Infrastructure;
+﻿namespace Roller.Infrastructure.Domain;
 
 public interface IDeletable
 {
