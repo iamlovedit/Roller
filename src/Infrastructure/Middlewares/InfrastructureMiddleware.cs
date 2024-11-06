@@ -20,8 +20,8 @@ public static class InfrastructureMiddleware
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 var exceptionHandlerPathFeature =
                     context.Features.Get<IExceptionHandlerPathFeature>();
-                var message = new MessageData(false, "发生未知错误", 500);
-                Log.Logger?.Error(exceptionHandlerPathFeature?.Error.Message!);
+                var message = new MessageData(false, "服务异常，请联系管理员", 500);
+                Log.Logger?.Error(exceptionHandlerPathFeature?.Error,exceptionHandlerPathFeature?.Error.Message!);
                 await context.Response.WriteAsync(message.Serialize());
             });
         });

@@ -21,8 +21,8 @@ public class GlobalExceptionsFilter(ILogger<GlobalExceptionsFilter> logger) : IA
             }
             else
             {
-                logger.LogError(context.Exception.Message);
-                message = new MessageData(false, context.Exception.Message, 500);
+                logger.LogError(context.Exception, context.Exception.Message);
+                message = new MessageData(false, "服务异常，请联系管理员", 500);
             }
 
             context.Result = new ContentResult
