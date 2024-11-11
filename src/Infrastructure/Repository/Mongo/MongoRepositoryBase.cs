@@ -7,7 +7,7 @@ namespace Roller.Infrastructure.Repository.Mongo;
 
 public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database) :
     IMongoRepositoryBase<TEntity, TKey>
-    where TEntity : class, IIdentifiable, new()
+    where TEntity : class, IIdentifiable<TKey>, new()
     where TKey : IEquatable<TKey>
 {
     private readonly IMongoCollection<TEntity> _collection = database.GetCollection<TEntity>(typeof(TEntity).Name);

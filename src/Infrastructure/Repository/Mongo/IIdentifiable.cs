@@ -1,6 +1,9 @@
-﻿namespace Roller.Infrastructure.Repository.Mongo;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
-public interface IIdentifiable
+namespace Roller.Infrastructure.Repository.Mongo;
+
+public interface IIdentifiable<TKey> where TKey : IEquatable<TKey>
 {
-    string Id { get; set; }
+    [BsonId]
+    TKey Id { get; set; }
 }

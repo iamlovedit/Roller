@@ -4,7 +4,7 @@ using MongoDB.Driver;
 namespace Roller.Infrastructure.Repository.Mongo;
 
 public interface IMongoRepositoryBase<TEntity, in TKey>
-    where TEntity : class, IIdentifiable, new() where TKey : IEquatable<TKey>
+    where TEntity : class, IIdentifiable<TKey>, new() where TKey : IEquatable<TKey>
 {
     IMongoCollection<TEntity> Collection { get; }
 
