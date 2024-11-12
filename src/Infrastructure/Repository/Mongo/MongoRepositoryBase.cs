@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using SqlSugar.Extensions;
 
 namespace Roller.Infrastructure.Repository.Mongo;
@@ -29,7 +30,7 @@ public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database
 
     public async Task<List<TEntity>?> GetListAsync()
     {
-        return await _collection.Find(_ => true).ToListAsync();
+        return await _collection.AsQueryable().ToListAsync();
     }
 
     public async Task<TEntity?> GetByObjectIdAsync(string id)
@@ -55,16 +56,16 @@ public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database
         return await _collection.Find(filter).ToListAsync();
     }
 
-    public async Task UpdateAsync(TKey id, TEntity entity)
+    public async Task<TEntity> UpdateAsync(TKey id, TEntity entity)
     {
         var filter = Builders<TEntity>.Filter.Eq(_idField, id);
-        await _collection.FindOneAndReplaceAsync(filter, entity);
+        return await _collection.FindOneAndReplaceAsync(filter, entity);
     }
 
-    public async Task DeleteAsync(TKey id)
+    public async Task<TEntity> DeleteAsync(TKey id)
     {
         var filter = Builders<TEntity>.Filter.Eq(_idField, id);
-        await _collection.FindOneAndDeleteAsync(filter);
+        return await _collection.FindOneAndDeleteAsync(filter);
     }
 
     public async Task<PageData<TEntity>?> GetPageDataAsync(int page, int pageSize,

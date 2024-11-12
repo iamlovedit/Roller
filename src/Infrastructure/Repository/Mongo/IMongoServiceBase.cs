@@ -3,11 +3,11 @@ using MongoDB.Driver;
 
 namespace Roller.Infrastructure.Repository.Mongo;
 
-public interface IMongoRepositoryBase<TEntity, in TKey>
-    where TEntity : class, IIdentifiable<TKey>, new() where TKey : IEquatable<TKey>
+public interface IMongoServiceBase<TEntity, TKey> where TEntity : class, IIdentifiable<TKey>, new()
+    where TKey : IEquatable<TKey>
 {
-    IMongoCollection<TEntity> Collection { get; }
-
+    IMongoRepositoryBase<TEntity, TKey> DAL { get; set; }
+    
     Task AddAsync(TEntity entity);
 
     Task<TEntity?> GetAsync(TKey id);
