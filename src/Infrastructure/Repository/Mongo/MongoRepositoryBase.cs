@@ -6,7 +6,7 @@ using SqlSugar.Extensions;
 
 namespace Roller.Infrastructure.Repository.Mongo;
 
-public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database) :
+public class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database) :
     IMongoRepositoryBase<TEntity, TKey>
     where TEntity : class, IIdentifiable<TKey>, new()
     where TKey : IEquatable<TKey>
