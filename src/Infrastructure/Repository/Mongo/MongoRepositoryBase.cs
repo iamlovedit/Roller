@@ -22,6 +22,11 @@ public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database
         await _collection.InsertOneAsync(entity);
     }
 
+    public async Task AddManyAsync(IEnumerable<TEntity> entities)
+    {
+        await _collection.InsertManyAsync(entities);
+    }
+
     public async Task<TEntity?> GetAsync(TKey id)
     {
         var filter = Builders<TEntity>.Filter.Eq(_idField, id);
@@ -66,6 +71,13 @@ public abstract class MongoRepositoryBase<TEntity, TKey>(IMongoDatabase database
     {
         var filter = Builders<TEntity>.Filter.Eq(_idField, id);
         return await _collection.FindOneAndDeleteAsync(filter);
+    }
+
+    public async Task<bool> DeleteManyAsync(Expression<Func<TEntity, bool>> predicate)
+    {
+        var filter = Builders<TEntity>.Filter.Where(predicate);
+        var result = await _collection.DeleteManyAsync(filter);
+        return result.IsAcknowledged;
     }
 
     public async Task<PageData<TEntity>?> GetPageDataAsync(int page, int pageSize,

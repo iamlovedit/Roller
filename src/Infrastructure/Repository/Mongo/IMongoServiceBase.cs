@@ -10,6 +10,8 @@ public interface IMongoServiceBase<TEntity, TKey> where TEntity : class, IIdenti
     
     Task AddAsync(TEntity entity);
 
+    Task AddManyAsync(IEnumerable<TEntity> entities);
+    
     Task<TEntity?> GetAsync(TKey id);
 
     Task<List<TEntity>?> GetListAsync();
@@ -26,6 +28,8 @@ public interface IMongoServiceBase<TEntity, TKey> where TEntity : class, IIdenti
 
     Task<TEntity> DeleteAsync(TKey id);
 
+    Task<bool> DeleteManyAsync(Expression<Func<TEntity, bool>> predicate);
+    
     Task<PageData<TEntity>?> GetPageDataAsync(int page, int pageSize,
         Expression<Func<TEntity, bool>>? filter = null,
         Expression<Func<TEntity, object>>? orderBy = null,

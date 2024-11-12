@@ -13,7 +13,11 @@ public abstract class MongoServiceBase<TEntity, TKey>(IMongoRepositoryBase<TEnti
     public async Task AddAsync(TEntity entity)
     {
         await DAL.AddAsync(entity);
-        ;
+    }
+
+    public async Task AddManyAsync(IEnumerable<TEntity> entities)
+    {
+        await DAL.AddManyAsync(entities);
     }
 
     public async Task<TEntity?> GetAsync(TKey id)
@@ -54,6 +58,11 @@ public abstract class MongoServiceBase<TEntity, TKey>(IMongoRepositoryBase<TEnti
     public async Task<TEntity> DeleteAsync(TKey id)
     {
         return await DAL.DeleteAsync(id);
+    }
+
+    public async Task<bool> DeleteManyAsync(Expression<Func<TEntity, bool>> predicate)
+    {
+        return await DAL.DeleteManyAsync(predicate);
     }
 
     public async Task<PageData<TEntity>?> GetPageDataAsync(int page, int pageSize,
