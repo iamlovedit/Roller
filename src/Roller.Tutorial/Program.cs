@@ -11,5 +11,6 @@ builder.Services.AddRollerRabbitMQEventBus(builder.Configuration);
 builder.Services.AddTransient<MessageSentEventHandler>();
 builder.Services.TryAddScoped<IPersonService, PersonService>();
 var app = builder.Build();
+app.UsePathBase("/test");
 app.Services.SubscribeEvent<MessageSentEvent, MessageSentEventHandler>();
 app.UseInfrastructure();

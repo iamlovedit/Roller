@@ -8,13 +8,23 @@ using Roller.Tutorial.Services;
 
 namespace Roller.Tutorial.Controller.V1;
 
+/// <summary>
+/// 测试服务
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="personService"></param>
+/// <param name="eventBus"></param>
 [ApiVersion("1.0")]
-[Route("tutorial/{version:apiVersion}")]
+[Route("tutorial/v{version:apiVersion}")]
 public class TutorialController(
     ILogger<TutorialController> logger,
     IPersonService personService,
     IEventBus eventBus) : RollerControllerBase
 {
+    /// <summary>
+    /// Hello
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("hello")]
     public async Task<MessageData<string>> HelloAsync()
     {
