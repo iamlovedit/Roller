@@ -33,6 +33,20 @@ public static class SwaggerGenSetup
             {
                 { jwtSecurityScheme, Array.Empty<string>() }
             });
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            foreach (var filePath in Directory.GetFiles(directory, "*.xml"))
+            {
+                try
+                {
+                    options.IncludeXmlComments(filePath, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    continue;
+                }
+            }
+
             configureOptions?.Invoke(options);
         });
         return services;
