@@ -44,7 +44,7 @@ public static class InfrastructureMiddleware
 
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         {
-            app.UseVersionedSwaggerUI();
+            app.UseVersionedSwaggerUi();
         }
 
         app.MapControllers();

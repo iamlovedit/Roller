@@ -6,7 +6,7 @@ namespace Roller.Infrastructure.Middlewares;
 
 public static class SwaggerUi
 {
-    public static void UseVersionedSwaggerUI(this IApplicationBuilder app)
+    public static void UseVersionedSwaggerUi(this IApplicationBuilder app)
     {
         ArgumentNullException.ThrowIfNull(app);
         var apiVersionDescriptionProvider =
