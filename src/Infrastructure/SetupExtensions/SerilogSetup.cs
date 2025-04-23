@@ -1,13 +1,14 @@
 ﻿using Roller.Infrastructure.Options;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Roller.Infrastructure.SetupExtensions;
 
 public static class SerilogSetup
 {
-    public static IServiceCollection AddSerilogSetup(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSerilogSetup(this IServiceCollection services,
+        IConfiguration configuration,
+        Action<LoggerConfiguration>? loggerAction = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -19,9 +20,9 @@ public static class SerilogSetup
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .WriteTo.Console(theme: AnsiConsoleTheme.Code)
             .Enrich.FromLogContext();
+        loggerAction?.Invoke(loggerConfiguration);
 
         if (serilogOptions.WriteFile)
         {
