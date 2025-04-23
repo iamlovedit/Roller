@@ -4,19 +4,16 @@ public static class HttpContextExtensions
 {
     public static string GetRequestIp(this HttpContext context)
     {
-        var ip = context.GetRequestHeaderValue<string>("X-Forwarded-For");
-        if (!string.IsNullOrEmpty(ip) || context.Connection.RemoteIpAddress == null)
+        var ip = context.Request.Headers["X-Real-IP"].FirstOrDefault() ??
+                 context.Request.Headers["X-Forwarded-For"].FirstOrDefault() ??
+                 context.Connection.RemoteIpAddress?.ToString();
+
+        if (!string.IsNullOrEmpty(ip) && ip.Contains(','))
         {
-            return ip;
+            ip = ip.Split(',')[0].Trim();
         }
 
-        ip = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
-        if (string.IsNullOrEmpty(ip))
-        {
-            ip = context.GetRequestHeaderValue<string>("REMOTE_ADDR");
-        }
-
-        return ip;
+        return ip ?? "unknown";
     }
 
     public static T? GetRequestHeaderValue<T>(this HttpContext context, string headerName)

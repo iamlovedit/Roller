@@ -21,12 +21,20 @@ public static class InfrastructureMiddleware
                 var exceptionHandlerPathFeature =
                     context.Features.Get<IExceptionHandlerPathFeature>();
                 var message = new MessageData(false, "服务异常，请联系管理员", 500);
-                Log.Logger?.Error(exceptionHandlerPathFeature?.Error,exceptionHandlerPathFeature?.Error.Message!);
+                Log.Logger?.Error(exceptionHandlerPathFeature?.Error, exceptionHandlerPathFeature?.Error.Message!);
                 await context.Response.WriteAsync(message.Serialize());
             });
         });
 
         app.UseRouting();
+
+        var forwardedHeaderOptions = new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        };
+        forwardedHeaderOptions.KnownNetworks.Clear();
+        forwardedHeaderOptions.KnownProxies.Clear();
+        app.UseForwardedHeaders(forwardedHeaderOptions);
 
         app.UseCors(CrossOptions.Name);
 
@@ -60,12 +68,13 @@ public static class InfrastructureMiddleware
         app.UseSerilogRequestLogging(options =>
         {
             options.MessageTemplate =
-                "[{RemoteIpAddress}] [{RequestScheme}] [{RequestHost}] [{RequestMethod}] [{RequestPath}] responded [{StatusCode}] in [{Elapsed:0.0000}] ms";
+                "[{RemoteIpAddress}] [{RequestScheme}] [{RequestHost}] [{RequestMethod}] [{RequestPath}] responded [{StatusCode}] in [{Elapsed:0.0000} ms] [{ContentType}]";
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
             {
                 diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
                 diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
                 diagnosticContext.Set("RemoteIpAddress", httpContext.GetRequestIp());
+                diagnosticContext.Set("ContentType", httpContext.Response.ContentType!);
             };
         });
     }
