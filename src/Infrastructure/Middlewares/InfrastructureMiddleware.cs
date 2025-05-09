@@ -73,7 +73,7 @@ public static class InfrastructureMiddleware
             {
                 diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
                 diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-                diagnosticContext.Set("RemoteIpAddress", httpContext.GetRequestIp());
+                diagnosticContext.Set("RemoteIpAddress", httpContext.GetRealIpAddress());
                 diagnosticContext.Set("ContentType", httpContext.Response.ContentType!);
             };
         });

@@ -35,7 +35,7 @@ public class IdempotencyFilter(ILogger<IdempotencyFilter> logger, IRedisBasketRe
             if (await redis.Exist(redisKey))
             {
                 logger.LogWarning("路径 {path} 请求频繁，请求ip：{ip}", request.Path,
-                    context.HttpContext.GetRequestIp());
+                    context.HttpContext.GetRealIpAddress());
                 var message = new MessageData(false, idempotencyAttribute.Message, 409);
                 context.Result = new ObjectResult(message) { StatusCode = 200 };
             }

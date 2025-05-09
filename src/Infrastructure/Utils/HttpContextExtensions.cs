@@ -2,7 +2,7 @@
 
 public static class HttpContextExtensions
 {
-    public static string GetRequestIp(this HttpContext context)
+    public static string GetRealIpAddress(this HttpContext context)
     {
         var ip = context.Request.Headers["X-Real-IP"].FirstOrDefault() ??
                  context.Request.Headers["X-Forwarded-For"].FirstOrDefault() ??

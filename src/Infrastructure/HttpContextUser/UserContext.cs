@@ -70,7 +70,7 @@ public class UserContext<TKey>(
 
     public string RemoteIpAddress
     {
-        get => _remoteIpAddress ??= httpContextAccessor.HttpContext?.GetRequestIp()!;
+        get => _remoteIpAddress ??= httpContextAccessor.HttpContext?.GetRealIpAddress()!;
         set => _remoteIpAddress = value;
     }
 
