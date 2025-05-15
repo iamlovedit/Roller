@@ -11,6 +11,8 @@ public interface IRepositoryBase<T, in TId> where T : class, new() where TId : I
 
     Task<List<T>?> GetAllAsync();
 
+    Task<List<T>?> FindAsync(Expression<Func<T, bool>> predicate);
+
     Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression);
 
     Task<long> AddSnowflakeAsync(T entity);

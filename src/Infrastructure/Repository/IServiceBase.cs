@@ -11,6 +11,8 @@ public interface IServiceBase<T,TId> where T : class, new() where TId : IEquatab
 
     Task<List<T>?> GetAllAsync();
 
+    Task<List<T>?> FindAsync(Expression<Func<T, bool>> predicate);
+    
     Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression);
 
     Task<long> AddSnowflakeAsync(T entity);

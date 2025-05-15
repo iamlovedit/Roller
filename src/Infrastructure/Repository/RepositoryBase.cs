@@ -47,6 +47,11 @@ public class RepositoryBase<T, TId>(ISqlSugarClient context)
         return await context.Queryable<T>().ToListAsync();
     }
 
+    public async Task<List<T>?> FindAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await context.Queryable<T>().Where(predicate).ToListAsync();
+    }
+
     public async Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
     {
         return await context.Queryable<T>().FirstAsync(expression);

@@ -40,6 +40,11 @@ namespace Roller.Infrastructure.Repository
             return await DAL.GetAllAsync();
         }
 
+        public async Task<List<T>?> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await DAL.FindAsync(predicate);
+        }
+
         public async Task<T?> GetFirstByExpressionAsync(Expression<Func<T, bool>> expression)
         {
             return await DAL.GetFirstByExpressionAsync(expression);
