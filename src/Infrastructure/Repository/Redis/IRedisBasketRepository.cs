@@ -4,16 +4,16 @@ namespace Roller.Infrastructure.Repository.Redis;
 
 public interface IRedisBasketRepository
 {
-
+    IConnectionMultiplexer ConnectionMultiplexer { get; set; }
     Task<string> GetValue(string key);
 
     Task<T?> Get<T>(string key);
 
     Task<List<T>> GetValues<T>(string[] keys) where T : class;
 
-    Task Set(string key, object? value, TimeSpan cacheTime);
+    Task Set(string key, object? value, TimeSpan? cacheTime = null);
 
-    Task<bool> SetValues(Dictionary<string, object> valuePairs, TimeSpan cacheTime);
+    Task<bool> SetValues(Dictionary<string, object> valuePairs, TimeSpan? cacheTime = null);
 
     Task<bool> Exist(string key);
 
@@ -46,5 +46,4 @@ public interface IRedisBasketRepository
     Task<long> ListDelRangeAsync(string redisKey, string redisValue, long type = 0, int db = -1);
 
     Task ListClearAsync(string redisKey, int db = -1);
-
 }

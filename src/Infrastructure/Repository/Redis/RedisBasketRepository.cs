@@ -1,16 +1,16 @@
 ﻿using Newtonsoft.Json;
-using Roller.Infrastructure.Repository.Redis;
 using StackExchange.Redis;
 
-namespace Roller.Infrastructure.Cache;
+namespace Roller.Infrastructure.Repository.Redis;
 
 public class RedisBasketRepository(
     ILogger<RedisBasketRepository> logger,
-    ConnectionMultiplexer redis)
+    IConnectionMultiplexer redis)
     : IRedisBasketRepository
 {
-    private readonly ILogger<RedisBasketRepository> _logger = logger;
     private readonly IDatabase _database = redis.GetDatabase();
+
+    public IConnectionMultiplexer ConnectionMultiplexer { get; set; } = redis;
 
     private IServer GetServer()
     {
@@ -45,7 +45,7 @@ public class RedisBasketRepository(
         await _database.KeyDeleteAsync(key);
     }
 
-    public async Task Set(string key, object? value, TimeSpan cacheTime)
+    public async Task Set(string key, object? value, TimeSpan? cacheTime = null)
     {
         if (value != null)
         {
@@ -62,7 +62,7 @@ public class RedisBasketRepository(
         }
     }
 
-    public async Task<bool> SetValues(Dictionary<string, object> valuePairs, TimeSpan cacheTime)
+    public async Task<bool> SetValues(Dictionary<string, object> valuePairs, TimeSpan? cacheTime = null)
     {
         var transaction = _database.CreateTransaction();
         foreach (var pair in valuePairs)
